@@ -10,6 +10,7 @@
 - app/layouts/default.vue, host.vue, telegram.vue; app/plugins/demo.client.js, telegram.client.js.
 - app/stores/demo.js — Pinia и browser-local repository; app/composables/usePlatform.ts — платформенная навигация.
 - shared/types/ и shared/domain/ — типизированная модель и правила; demo/seed.json — источник демо-данных.
+- app/utils/browse-order.ts — порядок обхода выдачи по геодистанции для map-card ‹› и prev/next на странице объекта.
 - public/demo/ — ассеты; tests/unit/, tests/nuxt/ — тесты.
 server/ пока не нужен; добавлять только при реальной серверной интеграции.
 

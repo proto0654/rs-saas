@@ -125,14 +125,32 @@ describe('guest search filters', () => {
     search.findComponent({ name: 'YandexMap' }).vm.$emit('select', 'p1')
     await nextTick()
     await search.get('[aria-label="Следующий объект"]').trigger('click')
-    expect(store.selectedPropertyId).toBe('p2')
+    // Nearest filtered neighbour of p1 by distance (not seed order).
+    expect(store.selectedPropertyId).toBe('p61')
     await search.findAll('button').find(button => button.text().includes('Список'))!.trigger('click')
     await flushPromises()
     search.unmount()
     const returned = await mountSuspended(MestoApp, { route: '/search', global: { stubs: { YandexMap: true } } })
     expect(store.mapMode).toBe(false)
-    expect(returned.get('.map-card').text()).toContain('Кипарис')
+    expect(returned.get('.map-card').text()).toContain('Апартаменты у набережной')
     returned.unmount()
+  })
+  it('offers stay prev/next in filter distance order and keeps the query', async () => {
+    localStorage.clear()
+    const stay = await mountSuspended(MestoApp, { route: '/stays/p1?guests=2&checkIn=2027-06-12&checkOut=2027-06-16', global: { stubs: { YandexMap: true } } })
+    const store = useDemoStore(); store.$reset(); store.restore(); await nextTick()
+    expect(stay.find('.stay-browse').exists()).toBe(true)
+    expect(stay.find('.stay-browse-link.prev').exists()).toBe(false)
+    const next = stay.get('.stay-browse-link.next')
+    expect(next.text()).toContain('Апартаменты у набережной')
+    const navigate = vi.spyOn(stay.vm.$router, 'push')
+    await next.trigger('click')
+    expect(navigate).toHaveBeenCalledWith(expect.objectContaining({
+      path: '/stays/p61',
+      query: expect.objectContaining({ guests: '2', checkIn: '2027-06-12', checkOut: '2027-06-16' }),
+    }))
+    navigate.mockRestore()
+    stay.unmount()
   })
   it('applies a price filter and resets it through the screen', async () => {
     localStorage.clear()
