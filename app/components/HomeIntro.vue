@@ -11,6 +11,12 @@ const images = ref(photos.slice(0, 12).map(property => property.images[0]))
 const stage = ref(null)
 const viewport = reactive({ width: 1200, height: 800 })
 const motion = computed(() => introMotion(progress.value, viewport.width, viewport.height))
+const gridStyle = computed(() => ({
+  width: `${motion.value.geometry.gridWidth}px`,
+  '--intro-tile-height': `${motion.value.geometry.tileHeight}px`,
+  '--intro-column-gap': `${motion.value.geometry.columnGap}px`,
+  '--intro-row-gap': `${motion.value.geometry.rowGap}px`,
+}))
 let frame = 0
 let targetProgress = 0
 let lastFrame = 0
@@ -97,7 +103,7 @@ onBeforeUnmount(() => {
   <section ref="section" class="home-intro" :inert="motion.contentOpacity >= 1 || undefined" :aria-hidden="motion.contentOpacity >= 1 || undefined" aria-label="Локаль — жильё для поездок и жизни">
     <span id="search" class="search-anchor" aria-hidden="true"></span>
     <div ref="stage" class="intro-stage">
-      <div class="intro-grid-frame" aria-hidden="true"><div class="intro-tiles" :style="{ transform: `scale(${motion.scale})` }">
+      <div class="intro-grid-frame" :style="gridStyle" aria-hidden="true"><div class="intro-tiles" :style="{ transform: `scale(${motion.scale})` }">
         <div v-for="(image, index) in images" :key="index" class="intro-tile" :style="motion.tiles[index]"><img :src="image" alt=""></div>
       </div>
       </div>
@@ -118,9 +124,9 @@ onBeforeUnmount(() => {
 .search-anchor{position:absolute;top:400svh;left:0}
 .intro-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;isolation:isolate}
 .intro-stage::before{content:'';position:absolute;inset:0;background:#080c0a;opacity:calc(1 - var(--content-opacity));z-index:-1}
-.intro-grid-frame{position:absolute;top:50%;left:50%;width:min(720px,calc(100% - 56px));transform:translate(-50%,-50%)}
-.intro-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;will-change:transform}
-.intro-tile{aspect-ratio:1;overflow:hidden;will-change:transform,opacity}
+.intro-grid-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+.intro-tiles{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,var(--intro-tile-height));gap:var(--intro-row-gap) var(--intro-column-gap);will-change:transform}
+.intro-tile{min-width:0;min-height:0;overflow:hidden;will-change:transform,opacity}
 .intro-tile img{display:block;width:100%;height:100%;object-fit:cover}
 .intro-copy{position:relative;z-index:1;text-align:center;pointer-events:none}
 .intro-brand{font-size:clamp(76px,13vw,180px);font-weight:900;letter-spacing:-.085em;line-height:1.05;background:#d0f35b url('/demo/intro-map.svg') center/cover;-webkit-background-clip:text;background-clip:text;color:transparent}
