@@ -3,7 +3,7 @@ import { useRoute } from '#app'
 
 export function usePlatform() {
   const route = useRoute()
-  const path = computed(() => route.path.replace(/^\/tg(?=\/|$)/, '') || '/')
+  const path = computed(() => route.path.replace(/^\/tg(?=\/|$)/, '').replace(/\/+$/, '') || '/')
   const isTg = computed(() => route.path === '/tg' || route.path.startsWith('/tg/'))
   const isHost = computed(() => path.value.startsWith('/host'))
   const link = (value: string) => isTg.value ? `/tg${value === '/' ? '' : value}` : value

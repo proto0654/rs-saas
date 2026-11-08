@@ -6,6 +6,14 @@ import { useDemoStore } from '../../app/stores/demo.js'
 import { nextTick } from 'vue'
 
 describe('guest search filters', () => {
+  it('accepts a trailing slash from static hosting directory redirects', async () => {
+    localStorage.clear()
+    const wrapper = await mountSuspended(MestoApp, { route: '/tg/search/', global: { stubs: { YandexMap: true } } })
+    expect(wrapper.findAll('.property-card').length).toBeGreaterThan(20)
+    expect(wrapper.text()).toContain('Цена')
+    await flushPromises()
+    wrapper.unmount()
+  })
   it('dismisses the map card and restores it when another marker is selected', async () => {
     localStorage.clear()
     const wrapper = await mountSuspended(MestoApp, { route: '/search', global: { stubs: { YandexMap: true } } })
