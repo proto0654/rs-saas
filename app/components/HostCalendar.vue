@@ -120,8 +120,8 @@ function moveWindow(direction) { emit('update:start', shiftCalendarPeriod(props.
 .calendar-controls{display:flex;flex-direction:column;align-items:flex-end;gap:8px}.calendar-modes{display:flex;gap:4px;background:var(--surface-input);border:1px solid var(--border-main);border-radius:11px;padding:3px}.calendar-modes button{border:0;border-radius:8px;background:transparent;color:var(--text-muted);padding:0 15px;min-height:38px;font-size:12px;font-weight:700}.calendar-modes button.active{background:#d0f35b;color:#10170c}.calendar-period-label{margin:0 0 10px;color:var(--text-main);font-size:14px;font-weight:700}.calendar-timeline th.current-day{background:#33483a;color:var(--accent-text)}.calendar-timeline th.current-day small{color:var(--accent-text)}@media(max-width:800px){.calendar-controls{align-items:flex-start;margin-top:12px}.calendar-period{margin-top:0}}
 
 .calendar-timeline tr.calendar-group th:first-child{background:#293b30;padding:0}.calendar-group-toggle{width:100%;min-height:48px;border:0;background:transparent;color:var(--text-main);display:flex;justify-content:space-between;align-items:center;gap:6px;padding:6px 10px;text-align:left;font-weight:700}.calendar-group-toggle>span:first-child{min-width:0}.calendar-group-toggle[aria-expanded="true"] .disclosure-chevron{transform:rotate(180deg)}.calendar-group-toggle small{font-size:10px}.calendar-group-day{background:#293b30;color:var(--accent-text);font-weight:700;font-size:11px}.calendar-group-day span{white-space:nowrap}
-:global([data-theme="mesto-light"]) .calendar-timeline tr.calendar-group th:first-child,:global([data-theme="mesto-light"]) .calendar-group-day{background:#e3ecdc}
-:global([data-theme="mesto-light"]) .calendar-timeline th.current-day{background:#e3ecdc}
+:global(.theme-light) .calendar-timeline tr.calendar-group th:first-child,:global(.theme-light) .calendar-group-day{background:#e3ecdc}
+:global(.theme-light) .calendar-timeline th.current-day{background:#e3ecdc}
 .calendar-grid.calendar-timeline td button.timeline-booking{color:#fff}
 .calendar-grid.calendar-timeline td button.timeline-booking.selected{color:#10170c}
 </style>

@@ -5,13 +5,11 @@ const intro = inject('homeIntroMap', null)
 const panel = ref(null)
 const padding = ref([100, 24, 100, 24])
 const isIntro = computed(() => Boolean(intro && !intro.reducedMotion.value && intro.contentOpacity.value < .99))
-const reveal = computed(() => intro && !intro.reducedMotion.value ? intro.contentOpacity.value : 1)
 const mapStyle = computed(() => ({
   '--map-top': `${padding.value[0]}px`,
   '--map-right': `${padding.value[1]}px`,
   '--map-bottom': `${padding.value[2]}px`,
   '--map-left': `${padding.value[3]}px`,
-  filter: isIntro.value ? `grayscale(${1 - reveal.value}) brightness(${.45 + reveal.value * .55})` : undefined,
 }))
 let observer
 function measure() {

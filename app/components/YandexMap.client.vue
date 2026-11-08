@@ -202,7 +202,11 @@ watch(cameraPadding, () => {
   if (engine.value === 'v3') map.update({ margin: cameraPadding.value })
   if (!userMoved.value && props.selected) focusSelected()
 }, { deep: true })
-watch(theme, value => { if (engine.value === 'v3' && map) map.update({ theme: value }) })
+watch(theme, value => {
+  if (engine.value !== 'v3' || !map) return
+  // Let the shell class paint first; map tiles can catch up on the next frame.
+  requestAnimationFrame(() => { if (!disposed && map) map.update({ theme: value }) })
+})
 const widgetCamera = computed(() => mapViewport(props.selected ? props.properties.filter(item => item.id === props.selected) : props.properties, viewport.width, viewport.height, cameraPadding.value))
 const widgetUrl = computed(() => {
   const { lon, lat, zoom } = widgetCamera.value
@@ -236,7 +240,7 @@ onBeforeUnmount(() => {
 .map-show-all{position:absolute;top:var(--map-top,100px);right:24px;z-index:3;border:1px solid var(--border-main);border-radius:24px;padding:10px 14px;background:var(--surface-glass);color:var(--text-main);font-size:12px}
 .map-cluster-list{position:absolute;z-index:6;inset:auto 12px 25px;background:var(--surface-glass);border:1px solid var(--border-main);border-radius:16px;padding:12px;max-height:min(320px,70%);overflow:auto;color:var(--text-main)}.map-cluster-heading,.map-cluster-item{display:flex;align-items:center;justify-content:space-between;gap:12px}.map-cluster-heading button{border:0;background:transparent;color:inherit;font-size:24px;width:44px;height:44px}.map-cluster-item{width:100%;min-height:54px;padding:8px 4px;border:0;border-top:1px solid var(--border-main);background:transparent;color:inherit;text-align:left}.map-cluster-item span{min-width:0}.map-cluster-item b{text-align:right;white-space:nowrap}.map-cluster-item small{display:block;color:var(--text-muted);font-size:11px}
 
-:deep(.map-price-marker),:deep(.map-cluster-marker){border:1px solid #fff;background:#142019;color:#fff;font-size:12px;font-weight:800;box-shadow:0 3px 12px #0006;cursor:pointer}
+:deep(.map-price-marker),:deep(.map-cluster-marker){border:1px solid var(--map-marker-border,#fff);background:var(--map-marker-bg,#142019);color:var(--map-marker-fg,#fff);font-size:12px;font-weight:800;box-shadow:0 3px 12px var(--map-marker-shadow,#0006);cursor:pointer}
 :deep(.map-price-marker){border-radius:30px;padding:8px 12px;white-space:nowrap}
 :deep(.map-price-marker.is-selected){background:#d0f35b;color:#10170c;border-color:#d0f35b}
 :deep(.map-cluster-marker){border-radius:50%;min-width:44px;min-height:44px}

@@ -182,6 +182,7 @@ describe('Yandex Maps integration', () => {
     instance!.update.mockClear()
     theme.value = 'light'
     await wrapper.vm.$nextTick()
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
     expect(instance!.update).toHaveBeenCalledWith({ theme: 'light' })
     await wrapper.trigger('pointerdown')
     instance!.update.mockClear()

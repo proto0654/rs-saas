@@ -14,19 +14,20 @@ describe('search over a persistent viewport map', () => {
     })
     try {
       const mapNode = layer.querySelector('.test-map')
+      const mapLayer = layer.querySelector('.search-map-layer')!
       expect(mapNode).not.toBeNull()
-      expect(layer.querySelector('.search-map-layer')!.hasAttribute('inert')).toBe(true)
+      expect(mapLayer.hasAttribute('inert')).toBe(true)
       contentOpacity.value = .99
       await nextTick()
       expect(layer.querySelector('.test-map')).toBe(mapNode)
-      expect(layer.querySelector('.search-map-layer')!.hasAttribute('inert')).toBe(false)
+      expect(mapLayer.hasAttribute('inert')).toBe(false)
       contentOpacity.value = 1
       await nextTick()
-      expect(layer.querySelector('.search-map-layer')!.hasAttribute('inert')).toBe(false)
+      expect(mapLayer.hasAttribute('inert')).toBe(false)
       contentOpacity.value = 0
       reducedMotion.value = true
       await nextTick()
-      expect(layer.querySelector('.search-map-layer')!.hasAttribute('inert')).toBe(false)
+      expect(mapLayer.hasAttribute('inert')).toBe(false)
       await wrapper.get('.search-panel-handle').trigger('click')
       expect(wrapper.emitted('update:expanded')?.[0]).toEqual([true])
     } finally { wrapper.unmount(); layer.remove() }

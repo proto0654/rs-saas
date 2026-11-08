@@ -58,15 +58,19 @@
   --color-error: #a83935;
   --color-error-content: #ffffff;
 }
-:root, [data-theme="mesto"] {
+:root, [data-theme="mesto"], .theme-dark {
   --app-color-scheme: dark; --surface-page:#0c1210; --surface-card:#18201c; --surface-raised:#202a23;
   --surface-input:#101713; --surface-sheet:#1a231d; --surface-control:#303b32; --surface-glass:#101713ed;
   --text-main:#f5f4eb; --text-muted:#a8b1a4; --border-main:#3a443d; --accent-text:#d0f35b;
+  --map-marker-bg:#142019; --map-marker-fg:#fff; --map-marker-border:#fff; --map-marker-shadow:#0006;
+  --intro-map-veil:#080c0a;
 }
-[data-theme="mesto-light"] {
+[data-theme="mesto-light"], .theme-light {
   --app-color-scheme: light; --surface-page:#f6f7f1; --surface-card:#ffffff; --surface-raised:#edf1e9;
   --surface-input:#f8faf5; --surface-sheet:#ffffff; --surface-control:#e2e9de; --surface-glass:#fffffff2;
   --text-main:#17231b; --text-muted:#536457; --border-main:#cbd6c9; --accent-text:#466c19;
+  --map-marker-bg:#ffffff; --map-marker-fg:#17231b; --map-marker-border:#17231b; --map-marker-shadow:#0003;
+  --intro-map-veil:#080c0a;
 }
 @theme {
   --color-muted: #a8b1a4;
@@ -91,6 +95,8 @@
 .manual-button{margin-top:20px}
 
 .app-shell{min-height:var(--telegram-viewport-height,100dvh);padding-top:var(--telegram-safe-top,0px)}
+/* daisyUI paints [data-theme] with --root-bg; keep the shell clear so the fixed map stays visible. */
+.app-shell[data-theme]{background-color:transparent}
 @media(max-width:800px){.map{height:calc(var(--telegram-viewport-height,100dvh) - 350px)}.sheet{max-height:calc(var(--telegram-viewport-height,100dvh) - var(--telegram-safe-top,0px))}}
 .card-content,.host-card>div{min-width:0}h1,h2,h3,.map-card strong{overflow-wrap:anywhere}
 h1,h2,h3{font-weight:800}h1{letter-spacing:-.05em}.badge-status.draft{background:#4c534f;color:var(--text-main)}
@@ -126,7 +132,7 @@ select:not([multiple]):not([size]){appearance:none;padding-right:40px;background
 
 .view-switch button{white-space:nowrap}
 
-[data-theme="mesto-light"] .empty b,[data-theme="mesto-light"] .unit-row,[data-theme="mesto-light"] .host-nav a,[data-theme="mesto-light"] .tabs button,[data-theme="mesto-light"] input,[data-theme="mesto-light"] select,[data-theme="mesto-light"] textarea,[data-theme="mesto-light"] .close,[data-theme="mesto-light"] .map-provider-hint,[data-theme="mesto-light"] .map-cycle button,[data-theme="mesto-light"] .map-card-close,[data-theme="mesto-light"] .host-unit-edit,[data-theme="mesto-light"] .detail-page>.back{color:var(--text-main)}
-[data-theme="mesto-light"] .host-nav .router-link-active,[data-theme="mesto-light"] .tabs .active{color:#10170c}
-[data-theme="mesto-light"] .image-tag,[data-theme="mesto-light"] .gallery-count{color:#fff}
-[data-theme="mesto-light"] .host-sidebar a.router-link-active{background:#e2eccf;color:#253c1e}
+.theme-light .empty b,.theme-light .unit-row,.theme-light .host-nav a,.theme-light .tabs button,.theme-light input,.theme-light select,.theme-light textarea,.theme-light .close,.theme-light .map-provider-hint,.theme-light .map-cycle button,.theme-light .map-card-close,.theme-light .host-unit-edit,.theme-light .detail-page>.back{color:var(--text-main)}
+.theme-light .host-nav .router-link-active,.theme-light .tabs .active{color:#10170c}
+.theme-light .image-tag,.theme-light .gallery-count{color:#fff}
+.theme-light .host-sidebar a.router-link-active{background:#e2eccf;color:#253c1e}

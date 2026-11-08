@@ -14,7 +14,7 @@ scripts приложения:
 - test:watch: vitest
 - bot: запуск общего Telegram-бота на grammY с настройками окружения
 
-Tailwind подключать одним способом через Vite plugin из templates/nuxt.config.ts. Не ставить @nuxtjs/tailwindcss параллельно. daisyUI: отключить встроенные темы и объявить mesto; тема закреплена на html через app.head.htmlAttrs. Примеры CSS в templates. Не вводить Nuxt UI.
+Tailwind подключать одним способом через Vite plugin из templates/nuxt.config.ts. Не ставить @nuxtjs/tailwindcss параллельно. daisyUI: отключить встроенные темы и объявить mesto; SSR default через app.head.htmlAttrs, runtime-переключение — класс `theme-light`/`theme-dark` и `data-theme` на AppShell. daisyUI красит любой `[data-theme]` через `--root-bg`, поэтому у `.app-shell[data-theme]` фон принудительно прозрачный — иначе оболочка при появлении поиска накрывает fixed-карту. Примеры CSS в templates. Не вводить Nuxt UI.
 
 Vitest node-проект запускает demo/domain.test.mjs и tests/unit/**/*.test.ts. Nuxt-проект запускает tests/nuxt/**/*.nuxt.spec.ts через defineVitestProject и environment nuxt. Для компонентов Nuxt использовать mountSuspended из @nuxt/test-utils/runtime; обычные чистые функции не требуют Nuxt environment. До запуска nuxt-тестов выполнить nuxt prepare. Пример конфигурации — отправная точка, совместимость проверить на установленных версиях.
 

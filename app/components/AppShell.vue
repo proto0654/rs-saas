@@ -3,9 +3,14 @@ import { brandName } from '#shared/brand'
 const { isHost, isTg, link, path } = usePlatform()
 const isMapSearch = computed(() => ['/', '/search'].includes(path.value) || path.value.startsWith('/locations/'))
 const theme = useState('app-theme', () => 'dark')
+const themeClass = computed(() => theme.value === 'light' ? 'theme-light' : 'theme-dark')
+const themeAttr = computed(() => theme.value === 'light' ? 'mesto-light' : 'mesto')
 function applyTheme(value) {
   theme.value = value
-  document.documentElement.dataset.theme = value === 'light' ? 'mesto-light' : 'mesto'
+  if (!import.meta.client) return
+  // Keep page chrome in sync without swapping the whole document theme tree.
+  document.documentElement.style.colorScheme = value
+  document.body.style.background = value === 'light' ? '#f6f7f1' : '#0c1210'
 }
 function toggleTheme() {
   const next = theme.value === 'dark' ? 'light' : 'dark'
@@ -17,7 +22,7 @@ onMounted(() => {
 })
 </script>
 <template>
-<div class="app-shell" :class="{ 'host-shell': isHost, 'map-search-shell': isMapSearch }">
+<div class="app-shell" :class="[themeClass, { 'host-shell': isHost, 'map-search-shell': isMapSearch }]" :data-theme="themeAttr">
   <header class="topbar"><NuxtLink :to="link('/')" class="logo">{{ brandName }}<span>.</span></NuxtLink><div class="desktop-links"><NuxtLink :to="link('/search')">Найти жильё</NuxtLink><NuxtLink :to="link('/favorites')">Избранное</NuxtLink><NuxtLink :to="link('/bookings')">Брони</NuxtLink></div><div class="context-switch"><NuxtLink :class="{current: !isHost}" :to="link('/search')">Гость</NuxtLink><NuxtLink :class="{current: isHost}" :to="link('/host/properties')">Хозяин</NuxtLink><NuxtLink :class="{current: isTg}" :to="isTg ? '/search' : '/tg'">{{ isTg ? 'Web ↗' : 'TG ↗' }}</NuxtLink></div><button class="theme-toggle" type="button" :aria-label="theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'" :title="theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'" @click="toggleTheme"><span aria-hidden="true">{{ theme === 'dark' ? '☀' : '☾' }}</span></button></header>
   <div v-if="isHost" class="host-layout"><aside class="host-sidebar" aria-label="Навигация хозяина"><NuxtLink :to="link('/host/properties')">⌂ <span>Объекты</span></NuxtLink><NuxtLink :to="link('/host/calendar')">▦ <span>Календарь</span></NuxtLink><NuxtLink :to="link('/host/bookings')">▤ <span>Бронирования</span></NuxtLink><NuxtLink :to="link('/host/bot')">◉ <span>Мой бот</span></NuxtLink><NuxtLink :to="link('/host/audit')">☷ <span>Журнал</span></NuxtLink><NuxtLink :to="link('/profile')">♙ <span>Профиль</span></NuxtLink></aside><div class="host-layout-content"><slot /></div></div>
   <slot v-else />
