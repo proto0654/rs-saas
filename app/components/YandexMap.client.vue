@@ -20,6 +20,8 @@ let focusZoom = null
 const userMoved = ref(false)
 const viewport = reactive({ width: 1200, height: 800 })
 const cameraPadding = computed(() => {
+  // Intro frames the full viewport; search reserves the measured panel footprint.
+  if (!props.interactive) return [64, 40, 80, 40]
   const padding = [...props.padding]
   if (props.selected) padding[2] = Math.max(0, Math.min(viewport.height - padding[0] - 120, padding[2] + 150))
   return padding
@@ -130,7 +132,8 @@ function observeResize() {
   resizeObserver = new ResizeObserver(entries => {
     if (!entries[0]?.contentRect.width || !entries[0]?.contentRect.height || userMoved.value) return
     if (engine.value === 'v2') map?.container.fitToViewport()
-    if (props.selected) focusSelected(); else fitResults()
+    // No fitResults here: intro→search and panel resize must not jump the camera.
+    if (props.selected) focusSelected()
   })
   resizeObserver.observe(container.value)
 }
@@ -195,8 +198,9 @@ watch(() => props.properties, () => { userMoved.value = false; syncMarkers(true)
 watch(() => props.selected, () => { syncMarkers(false); focusSelected() })
 watch(cameraPadding, () => {
   if (!map) return
+  // Margin only: refitting here shifts the intro camera when the search panel appears.
   if (engine.value === 'v3') map.update({ margin: cameraPadding.value })
-  if (!userMoved.value) { if (props.selected) focusSelected(); else fitResults() }
+  if (!userMoved.value && props.selected) focusSelected()
 }, { deep: true })
 watch(theme, value => { if (engine.value === 'v3' && map) map.update({ theme: value }) })
 const widgetCamera = computed(() => mapViewport(props.selected ? props.properties.filter(item => item.id === props.selected) : props.properties, viewport.width, viewport.height, cameraPadding.value))
