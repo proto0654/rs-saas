@@ -25,7 +25,7 @@ export function search(db: Database,f: SearchFilters) {
  if(!Number.isInteger(f.guests)||f.guests<1) throw new Error('Invalid guests');
  if(f.maxPrice != null && (!Number.isSafeInteger(f.maxPrice) || f.maxPrice < 0)) throw new Error('Invalid price');
  if(f.rentalMode === 'long_term' && nights(f.checkIn,f.checkOut) < 30) throw new Error('Minimum 30 nights');
- return db.properties.filter(p=>p.status==='published' && (p.rentalMode || 'short_term')===(f.rentalMode || 'short_term') && (!f.region||propertyRegion(p)===f.region) && (!f.city||p.city===f.city) && (!f.type||p.type===f.type) && (!f.videoVerified||p.videoVerified) && (f.amenities||[]).every(a=>p.amenities.includes(a))).flatMap(p=>{
+ return db.properties.filter(p=>p.status==='published' && (p.rentalMode || 'short_term')===(f.rentalMode || 'short_term') && (!f.region||propertyRegion(p)===f.region) && (!f.city||p.city===f.city) && (!f.type||p.type===f.type) && (!f.premium||p.premium === true) && (!f.videoVerified||p.videoVerified) && (f.amenities||[]).every(a=>p.amenities.includes(a))).flatMap(p=>{
  const rate=(unit: Unit)=>unit.baseMonthly ?? unit.baseNightly;
  const candidates=db.units.filter(u=>u.propertyId===p.id && u.capacity>=f.guests && (f.maxPrice==null||rate(u)<=f.maxPrice) && available(db,u.id,f.checkIn,f.checkOut));
  return candidates.length ? [{...p,availableUnitIds:candidates.map(u=>u.id),priceFrom:Math.min(...candidates.map(rate))}] : [];

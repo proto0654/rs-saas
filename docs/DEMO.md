@@ -1,6 +1,6 @@
 # Presentation walkthrough
 
-All listings, people, bookings, prices and images are fictional. Use the profile action “Сбросить демо” to load the complete showcase catalog. Reset removes current demo edits and both migration backups; it leaves other applications' browser storage intact.
+All listings, people, bookings, prices and images are fictional. Use the profile action “Сбросить демо” to load the complete showcase catalog. Reset removes current demo edits and migration backups; it leaves other applications' browser storage intact.
 
 ## Catalog coverage
 
@@ -8,7 +8,7 @@ Guest search keeps one full-viewport map behind a floating search/results panel:
 
 On the landing page the same map stays mounted throughout the intro. It starts grayscale and under a stronger dark veil, inert, then color and the search controls fade in together (~500ms). The shell header stays fixed above the intro: line-only during the cover, with backdrop blur once the full map and search UI are revealed; the bottom nav stays hidden until then. Reaching the end of the intro scroll unlocks search immediately (including a small mobile chrome tolerance); the scroll runway never intercepts clicks. Reduced motion opens search directly. Clearing restrictions is also available from a round reset control beside “Все фильтры”, without opening the filter panel. The keyless Yandex iframe uses a calculated initial camera to reserve panel space and fit results and displays the current listing coordinates as markers. Marker selection, prices and the fit-all action require a valid API key; open listing details from the results list in the fallback. The iframe cannot expose its manually changed camera to the app, so changes to search, selection or panel geometry reload its calculated view.
 
-The seed contains 60 properties in 27 cities across Crimea, Kuban and southern Russia: 40 apartments (12 monthly rentals), 9 hostels, 9 hotels and 2 houses. There are 112 physical units, 47 bookings, two saved favorites and one maintenance block. The first owner has 21 properties, including the original draft studio. City coordinates are approximate and are not navigation advice. Images repeat across fictional listings.
+The seed contains 63 properties in 27 cities across Crimea, Kuban and southern Russia: 42 apartments (12 monthly rentals), 9 hostels, 9 hotels and 3 houses. There are 115 physical units, 47 bookings, two saved favorites and one maintenance block. The first owner has 21 properties, including the original draft studio. City coordinates are approximate and are not navigation advice. Images repeat across fictional listings. The “Элитное жильё” quick filter selects three premium short-term properties and combines with the other search restrictions. Older saved catalogs automatically receive the three premium examples when their IDs are available; existing listings, bookings, favorites and filters are preserved.
 
 New searches start without a budget, sea view, city, region, property type or video restriction. Dates, guest count and rental mode remain the basic search parameters. Previously saved custom filters and explicit URL filters are retained. City entry pages apply their city; explicit filters can return no matches in inland cities.
 
@@ -37,7 +37,9 @@ Schema v2 adds the expanded presentation data and optional monthly rental fields
 
 For rollback to a v1 application, restore the exact backup JSON to `rs-saas-demo` before loading that application. Keep an exported copy before resetting. [Migration helpers](../shared/domain/migrations.ts) support version rollback for states without monthly rentals; a v2 state containing monthly units requires the original backup because v1 cannot represent monthly prices. No production database migration is involved.
 
-The historical June 12–16 / two guests / 6,000 ₽ / sea-view default is normalized in memory to unrestricted search only when the saved filters exactly match that preset. Custom filters, bookings and inventory stay intact. Before normalization, v2 state is backed up once to `rs-saas-demo:defaults-backup` (v1 uses its existing backup). Restore its exact JSON to the main key and the previous app version to roll back. Reset clears both project backups. Asset replacements keep existing image URLs, so saved listings also receive the new photographs; Git contains the previous assets for rollback.
+The optional premium property and search fields do not change the storage schema. On restore, catalog version 1 adds missing premium listings and their units in memory, skipping IDs that conflict with saved properties or units; existing entries are never overwritten. Before this upgrade, the original JSON is copied once to `rs-saas-demo:catalog-backup`. The main key is written on the next explicit mutation; the catalog version prevents later restores from re-adding deliberately removed entries. Restore the backup JSON to `rs-saas-demo` before loading the previous application to roll back. Previous versions ignore the optional fields, and a saved premium filter has no effect after rollback.
+
+The historical June 12–16 / two guests / 6,000 ₽ / sea-view default is normalized in memory to unrestricted search only when the saved filters exactly match that preset. Custom filters, bookings and inventory stay intact. Before normalization, v2 state is backed up once to `rs-saas-demo:defaults-backup` (v1 uses its existing backup). Restore its exact JSON to the main key and the previous app version to roll back. Reset clears the project backups. Asset replacements keep existing image URLs, so saved listings also receive the new photographs; Git contains the previous assets for rollback.
 
 ## Verification boundaries
 
@@ -45,19 +47,7 @@ The app uses browser-local demo data. Another browser starts from the seed. The 
 
 ## Image direction and provenance
 
-The raster assets were generated with the built-in imagegen tool, then inspected and copied to the existing paths below. They illustrate fictional accommodation, including repeated photographs; they are not evidence of real listings. Prompt direction: natural real-estate photographs, ordinary clean furnishings, realistic room proportions, subdued daylight and restrained colors, without luxury staging, dramatic landscapes, text or people.
-
-| Asset | Scene prompt |
-| --- | --- |
-| [Terrace](../public/demo/photo-p1.png) | Modest tiled Yalta apartment terrace, plain metal railing, folding chairs and a small table; neighboring buildings and a distant sea glimpse, overcast daylight. |
-| [Seaside interior](../public/demo/photo-p1-interior.png) | Small simple balcony and living room, practical furnishings and a quiet sea glimpse between neighboring buildings. |
-| [Guesthouse](../public/demo/photo-p2.png) | Modest three-story guesthouse, a few balconies, simple courtyard and entrance, practical landscaping and overcast daylight. |
-| [Room](../public/demo/photo-p2-room.png) | Small guesthouse room, plain double bed, neutral linen, bedside table, curtains and soft ordinary daylight. |
-| [Studio](../public/demo/photo-p3.png), [catalog studio](../public/demo/ordinary-apartment-1.png) | Compact white kitchen, muted blue sofa, simple dining table, laminate floor and natural window daylight in an ordinary Krasnodar studio. |
-| [Hostel](../public/demo/photo-p4.png) | Compact room with two metal bunks (four beds), white bedding, lockers, reading lights and natural window light. |
-| [House](../public/demo/photo-p5.png), [second house](../public/demo/photo-p8.png) | Small plaster detached rental house, ordinary garden, simple terrace and practical chairs in a believable neighborhood. |
-| [Simple flat](../public/demo/photo-p6.png) | Affordable apartment with an olive sofa, plain wardrobe, small dining table, warm wood floor and soft window daylight. |
-| [Apartment](../public/demo/photo-p7.png), [catalog apartment](../public/demo/ordinary-apartment-2.png) | Comfortable ordinary apartment, light walls, simple oak furniture, sofa and dining table, modest balcony and diffuse daylight. |
+The raster assets were generated with the built-in imagegen tool and inspected. They illustrate fictional listings, not real accommodation; photographs repeat across some properties. The direction is believable listing photography with natural light, practical furnishings and a mix of ordinary and premium accommodation, avoiding both run-down interiors and elaborate postcard staging. Existing image paths are retained so saved listings receive replacements. Premium examples use [coastal apartment](../public/demo/premium-coast.png), [house](../public/demo/premium-house.png), and [city apartment](../public/demo/premium-city.png) images.
 
 ## Preview publication
 

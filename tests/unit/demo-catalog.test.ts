@@ -9,8 +9,8 @@ const db = seed as Database
 describe('presentation catalog', () => {
   it('covers the regions, property types and all guest booking states without changing the reference search', () => {
     expect(validDatabase(db)).toBe(true)
-    expect(db.properties).toHaveLength(60)
-    expect(db.units).toHaveLength(112)
+    expect(db.properties).toHaveLength(63)
+    expect(db.units).toHaveLength(115)
     expect(db.defaultSearch.maxPrice).toBeNull()
     expect(db.defaultSearch.amenities).toEqual([])
     expect(search(db,db.defaultSearch).length).toBeGreaterThan(20)
@@ -23,6 +23,12 @@ describe('presentation catalog', () => {
     expect(search(db,{checkIn:'2027-06-12',checkOut:'2027-06-16',guests:2,region:'krasnodar'}).every(p => p.region === 'krasnodar')).toBe(true)
     expect(search(db,{checkIn:'2027-06-12',checkOut:'2027-06-16',guests:2,city:'Краснодар'}).some(p=>p.type==='apartment')).toBe(true)
     expect(search(db,{checkIn:'2027-06-12',checkOut:'2027-07-12',guests:2,city:'Краснодар',rentalMode:'long_term'}).length).toBeGreaterThan(0)
+  })
+  it('filters premium properties and combines the selection with budget', () => {
+    const premium = search(db, {...db.defaultSearch, premium: true})
+    expect(premium.map(p => p.id)).toEqual(['p61', 'p62', 'p63'])
+    expect(search(db, {...db.defaultSearch, premium: true, maxPrice: 20000}).map(p => p.id)).toEqual(['p63'])
+    expect(search(db, {...db.defaultSearch, premium: true, maxPrice: 1000})).toEqual([])
   })
   it('contains no overlapping blocking bookings or bookings over maintenance', () => {
     for (const unit of db.units) {
@@ -64,7 +70,10 @@ describe('demo v1 upgrade', () => {
     const upgraded=upgradeDemoState(previous)
     expect(validDemoState(upgraded)).toBe(true)
     expect(previous.db.schemaVersion).toBe(1)
-    expect(rollbackDemoState(upgraded)).toEqual(previous)
+    const rolledBack = rollbackDemoState(upgraded) as typeof previous & { catalogVersion?: number }
+    expect(rolledBack.db.schemaVersion).toBe(1)
+    expect(rolledBack.db.properties.find(p => p.id === 'p1')!.title).toBe('Моё название')
+    expect(rolledBack.db.properties.filter(p => p.premium)).toHaveLength(3)
     expect(()=>rollbackDemoState({db:seed})).toThrow('v1 backup')
   })
 })

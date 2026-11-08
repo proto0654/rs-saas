@@ -1595,6 +1595,87 @@
       "images": [
         "/demo/photo-p2.png"
       ]
+    },
+    {
+      "id": "p61",
+      "ownerId": "host2",
+      "title": "Апартаменты у набережной",
+      "type": "apartment",
+      "city": "Ялта",
+      "location": {
+        "lat": 44.498,
+        "lon": 34.17
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "air_conditioning",
+        "parking"
+      ],
+      "videoVerified": false,
+      "rating": 4.9,
+      "reviewCount": 12,
+      "description": "Просторное жильё с современным ремонтом и удобствами для комфортного отдыха. Демонстрационное объявление.",
+      "images": [
+        "/demo/premium-coast.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term",
+      "premium": true
+    },
+    {
+      "id": "p62",
+      "ownerId": "host2",
+      "title": "Дом с террасой",
+      "type": "house",
+      "city": "Геленджик",
+      "location": {
+        "lat": 44.56,
+        "lon": 38.08
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "air_conditioning",
+        "parking"
+      ],
+      "videoVerified": false,
+      "rating": 4.9,
+      "reviewCount": 12,
+      "description": "Просторное жильё с современным ремонтом и удобствами для комфортного отдыха. Демонстрационное объявление.",
+      "images": [
+        "/demo/premium-house.png"
+      ],
+      "region": "krasnodar",
+      "rentalMode": "short_term",
+      "premium": true
+    },
+    {
+      "id": "p63",
+      "ownerId": "host2",
+      "title": "Просторная квартира в центре",
+      "type": "apartment",
+      "city": "Краснодар",
+      "location": {
+        "lat": 45.04,
+        "lon": 38.98
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "air_conditioning",
+        "parking"
+      ],
+      "videoVerified": false,
+      "rating": 4.9,
+      "reviewCount": 12,
+      "description": "Просторное жильё с современным ремонтом и удобствами для комфортного отдыха. Демонстрационное объявление.",
+      "images": [
+        "/demo/premium-city.png"
+      ],
+      "region": "krasnodar",
+      "rentalMode": "short_term",
+      "premium": true
     }
   ],
   "units": [
@@ -2619,6 +2700,33 @@
       "capacity": 4,
       "baseNightly": 6000,
       "cleaningFee": 500
+    },
+    {
+      "id": "p61-1",
+      "propertyId": "p61",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 24000,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p62-1",
+      "propertyId": "p62",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 32000,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p63-1",
+      "propertyId": "p63",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 17000,
+      "cleaningFee": 0
     }
   ],
   "bookings": [

@@ -37,6 +37,19 @@ describe('guest search filters', () => {
     await flushPromises()
     wrapper.unmount()
   })
+  it('filters premium listings and removes the selection', async () => {
+    localStorage.clear()
+    const wrapper = await mountSuspended(MestoApp, { route: '/search', global: { stubs: { YandexMap: true } } })
+    const store = useDemoStore(); store.$reset(); store.restore(); await nextTick()
+    const premium = wrapper.findAll('button').find(button => button.text() === 'Элитное жильё')!
+    await premium.trigger('click'); await flushPromises()
+    expect(store.data!.filters.premium).toBe(true)
+    expect(wrapper.findAll('.property-card')).toHaveLength(3)
+    await wrapper.get('[aria-label="Убрать фильтр: Элитное жильё"]').trigger('click'); await flushPromises()
+    expect(store.data!.filters.premium).toBe(false)
+    expect(wrapper.findAll('.property-card').length).toBeGreaterThan(3)
+    wrapper.unmount()
+  })
   it('opens inland city pages without the reference sea-view filter', async () => {
     localStorage.clear()
     const wrapper = await mountSuspended(MestoApp, { route: '/locations/krasnodar', global: { stubs: { YandexMap: true } } })

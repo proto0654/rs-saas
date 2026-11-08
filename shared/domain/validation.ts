@@ -16,14 +16,14 @@ const rows = (value: unknown, check: (v: Row) => boolean): value is Row[] => Arr
 export function validFilters(value: unknown): value is SearchFilters {
   if (!record(value) || !range(value.checkIn,value.checkOut) || !positive(value.guests)) return false
   if (value.rentalMode === 'long_term' && nights(String(value.checkIn),String(value.checkOut)) < 30) return false
-  return (value.region == null || oneOf(value.region,['crimea','krasnodar','south'])) && (value.rentalMode == null || oneOf(value.rentalMode,['short_term','long_term'])) && (value.maxPrice == null || amount(value.maxPrice)) && (value.city == null || typeof value.city === 'string') && (value.amenities == null || strings(value.amenities)) && (value.type == null || oneOf(value.type,['','apartment','hotel','hostel','house'])) && (value.videoVerified == null || typeof value.videoVerified === 'boolean')
+  return (value.region == null || oneOf(value.region,['crimea','krasnodar','south'])) && (value.rentalMode == null || oneOf(value.rentalMode,['short_term','long_term'])) && (value.maxPrice == null || amount(value.maxPrice)) && (value.city == null || typeof value.city === 'string') && (value.amenities == null || strings(value.amenities)) && (value.type == null || oneOf(value.type,['','apartment','hotel','hostel','house'])) && (value.premium == null || typeof value.premium === 'boolean') && (value.videoVerified == null || typeof value.videoVerified === 'boolean')
 }
 export function validDatabase(value: unknown): value is Database {
   if (!record(value) || value.schemaVersion !== demoSchemaVersion || !date(value.demoToday) || value.timezone !== 'Europe/Moscow' || !validFilters(value.defaultSearch)) return false
   if (!rows(value.users,v => text(v.name) && oneOf(v.role,['host','guest']))) return false
   const hosts = new Set(value.users.filter(v => v.role === 'host').map(v => v.id))
   const guests = new Set(value.users.filter(v => v.role === 'guest').map(v => v.id))
-  if (!rows(value.properties,v => hosts.has(v.ownerId) && text(v.title) && text(v.city) && text(v.description) && (v.region == null || oneOf(v.region,['crimea','krasnodar','south'])) && (v.rentalMode == null || oneOf(v.rentalMode,['short_term','long_term'])) && oneOf(v.type,['apartment','hotel','hostel','house']) && oneOf(v.status,['draft','published']) && strings(v.amenities) && strings(v.images) && typeof v.videoVerified === 'boolean' && typeof v.rating === 'number' && Number.isFinite(v.rating) && amount(v.reviewCount) && record(v.location) && typeof v.location.lat === 'number' && Math.abs(v.location.lat) <= 90 && typeof v.location.lon === 'number' && Math.abs(v.location.lon) <= 180)) return false
+  if (!rows(value.properties,v => hosts.has(v.ownerId) && text(v.title) && text(v.city) && text(v.description) && (v.region == null || oneOf(v.region,['crimea','krasnodar','south'])) && (v.rentalMode == null || oneOf(v.rentalMode,['short_term','long_term'])) && oneOf(v.type,['apartment','hotel','hostel','house']) && oneOf(v.status,['draft','published']) && (v.premium == null || typeof v.premium === 'boolean') && strings(v.amenities) && strings(v.images) && typeof v.videoVerified === 'boolean' && typeof v.rating === 'number' && Number.isFinite(v.rating) && amount(v.reviewCount) && record(v.location) && typeof v.location.lat === 'number' && Math.abs(v.location.lat) <= 90 && typeof v.location.lon === 'number' && Math.abs(v.location.lon) <= 180)) return false
   const properties = new Map(value.properties.map(v => [v.id,v]))
   if (!rows(value.units,v => properties.has(v.propertyId) && text(v.label) && oneOf(v.kind,['entire','room','bed']) && positive(v.capacity) && (v.baseMonthly == null ? positive(v.baseNightly) : v.baseNightly === 0 && positive(v.baseMonthly)) && amount(v.cleaningFee) && (v.image == null || text(v.image)))) return false
   if (value.units.some(unit => (properties.get(unit.propertyId)?.rentalMode === 'long_term') !== (unit.baseMonthly != null))) return false
@@ -35,6 +35,7 @@ export function validDemoState(value: unknown): value is DemoState {
   if (!record(value) || !validDatabase(value.db) || !strings(value.favorites) || !validFilters(value.filters) || !oneOf(value.role,['guest','host'])) return false
   const ids = new Set(value.db.properties.map(p => p.id))
   if (!value.favorites.every(id => ids.has(id))) return false
+  if (value.catalogVersion != null && !positive(value.catalogVersion)) return false
   if (value.personalBot != null && (!record(value.personalBot) || !text(value.personalBot.name) || !text(value.personalBot.token) || !value.personalBot.token.startsWith('demo_') || typeof value.personalBot.active !== 'boolean')) return false
   return value.audit == null || rows(value.audit,v => text(v.message) && typeof v.at === 'string' && Number.isFinite(Date.parse(v.at)))
 }

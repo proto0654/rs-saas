@@ -17,7 +17,7 @@ describe('home introduction', () => {
     const photos = seed.properties.filter(property => property.status === 'published').flatMap(property => property.images)
     const shown = wrapper.findAll('.intro-tile img').map(image => image.attributes('src')!)
     expect(shown).toHaveLength(12)
-    expect(new Set(shown).size).toBe(new Set(photos).size)
+    expect(new Set(shown).size).toBe(Math.min(12, new Set(photos).size))
     expect(shown.every(image => photos.includes(image))).toBe(true)
     expect(wrapper.get('a').attributes('href')).toBe('#search')
     expect(wrapper.get('.search-content').attributes('inert')).toBeDefined()

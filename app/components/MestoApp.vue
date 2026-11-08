@@ -35,6 +35,7 @@ const initialFilters = () => {
   if ('city' in q) f.city = String(q.city || '') || null
   if ('amenities' in q) f.amenities = String(q.amenities || '').split(',').filter(Boolean)
   if ('type' in q) f.type = Object.hasOwn(labels, String(q.type)) ? String(q.type) : ''
+  if ('premium' in q) f.premium = q.premium === '1'
   if ('videoVerified' in q) f.videoVerified = q.videoVerified === '1'
   if (path.value.startsWith('/locations/')) f.city = cities[id.value]
   try { if (f.rentalMode === 'long_term' && !q.checkOut) f.checkOut = addDays(f.checkIn, 30); search(seed, f); return f } catch { return structuredClone(seed.defaultSearch) }
@@ -90,6 +91,7 @@ const activeTags = computed(() => [
   ...(filters.value.maxPrice == null ? [] : [{ key: 'maxPrice', label: `До ${format(filters.value.maxPrice)} ₽/${filters.value.rentalMode === 'long_term' ? 'мес' : 'ночь'}` }]),
   ...(filters.value.type ? [{ key: 'type', label: labels[filters.value.type] }] : []),
   ...(filters.value.amenities || []).map(key => ({ key, label: amenityLabels[key] || key })),
+  ...(filters.value.premium ? [{ key: 'premium', label: 'Элитное жильё' }] : []),
   ...(filters.value.videoVerified ? [{ key: 'videoVerified', label: 'Видео проверено' }] : [])
 ])
 const selectedUnit = ref(null)
@@ -169,7 +171,7 @@ function unitAvailability(unit) {
   if (booking.checkIn === day) return { label: 'Заезд сегодня', kind: 'booked' }
   return { label: `Занят до ${date(booking.checkOut)}`, kind: 'booked' }
 }
-const query = () => ({ rentalMode: filters.value.rentalMode || 'short_term', region: filters.value.region || '', checkIn: filters.value.checkIn, checkOut: filters.value.checkOut, guests: String(filters.value.guests), maxPrice: filters.value.maxPrice == null ? '' : String(filters.value.maxPrice), city: filters.value.city || '', amenities: (filters.value.amenities || []).join(','), type: filters.value.type || '', videoVerified: filters.value.videoVerified ? '1' : '0' })
+const query = () => ({ rentalMode: filters.value.rentalMode || 'short_term', region: filters.value.region || '', checkIn: filters.value.checkIn, checkOut: filters.value.checkOut, guests: String(filters.value.guests), maxPrice: filters.value.maxPrice == null ? '' : String(filters.value.maxPrice), city: filters.value.city || '', amenities: (filters.value.amenities || []).join(','), type: filters.value.type || '', premium: filters.value.premium ? '1' : '0', videoVerified: filters.value.videoVerified ? '1' : '0' })
 function normalizeFilters(value) {
   return { ...clone(value), rentalMode: value.rentalMode || 'short_term', amenities: [...(value.amenities || [])], region: value.region || null, city: value.city || null, type: value.type || '', maxPrice: value.maxPrice === '' || value.maxPrice == null ? null : value.maxPrice }
 }
@@ -227,21 +229,23 @@ function changeRentalMode(mode) {
   if (mode === filters.value.rentalMode) return
   modeFilters.value[filters.value.rentalMode] = normalizeFilters(filters.value)
   const saved = modeFilters.value[mode]
-  const next = saved ? { ...saved, region: filters.value.region, city: filters.value.city, guests: filters.value.guests } : { ...normalizeFilters(filters.value), rentalMode: mode, maxPrice: null, checkOut: addDays(filters.value.checkIn, mode === 'long_term' ? 30 : 4), amenities: (filters.value.amenities || []).filter(key => db.value.properties.some(p => (p.rentalMode || 'short_term') === mode && p.amenities.includes(key))) }
+  const next = saved ? { ...saved, region: filters.value.region, city: filters.value.city, guests: filters.value.guests } : { ...normalizeFilters(filters.value), rentalMode: mode, maxPrice: null, premium: false, checkOut: addDays(filters.value.checkIn, mode === 'long_term' ? 30 : 4), amenities: (filters.value.amenities || []).filter(key => db.value.properties.some(p => (p.rentalMode || 'short_term') === mode && p.amenities.includes(key))) }
   previousDates.value = null
   return commitFilters(next, false)
 }
-function withoutRestrictions(value) { return { ...normalizeFilters(value), maxPrice: null, amenities: [], type: '', videoVerified: false } }
+function withoutRestrictions(value) { return { ...normalizeFilters(value), maxPrice: null, amenities: [], type: '', premium: false, videoVerified: false } }
 function clearFilters() { return commitFilters(withoutRestrictions(filters.value)) }
 function resetDraft() { draft.value = withoutRestrictions(draft.value); error.value = ''; invalidField.value = '' }
 function removeTag(key) {
   const next = normalizeFilters(filters.value)
   if (key === 'maxPrice') next.maxPrice = null
   else if (key === 'type') next.type = ''
+  else if (key === 'premium') next.premium = false
   else if (key === 'videoVerified') next.videoVerified = false
   else next.amenities = next.amenities.filter(amenity => amenity !== key)
   return commitFilters(next, false)
 }
+function togglePremium() { return commitFilters({ ...normalizeFilters(filters.value), premium: !filters.value.premium }, false) }
 function toggleQuickAmenity(key) {
   const next = normalizeFilters(filters.value)
   next.amenities = next.amenities.includes(key) ? next.amenities.filter(amenity => amenity !== key) : [...next.amenities, key]
@@ -304,6 +308,7 @@ function closeSheet() { editor.value = null; unitEditor.value = null; showNew.va
       <div class="quick-filters">
         <button class="chip" :class="{selected: filters.maxPrice != null}" @click="openSearchPanel('filters', true)">{{ filters.maxPrice != null ? `До ${format(filters.maxPrice)} ₽${filters.rentalMode === 'long_term' ? '/мес' : '/ночь'}` : 'Цена' }}</button>
         <button v-if="filters.rentalMode !== 'long_term'" class="chip" :class="{selected: filters.amenities?.includes('sea_view')}" :aria-pressed="!!filters.amenities?.includes('sea_view')" @click="toggleQuickAmenity('sea_view')">Вид на море</button>
+        <button v-if="filters.rentalMode !== 'long_term'" class="chip" :class="{selected: filters.premium}" :aria-pressed="!!filters.premium" @click="togglePremium">Элитное жильё</button>
         <button v-if="filters.rentalMode !== 'long_term'" class="chip" :class="{selected: isNow}" :aria-pressed="isNow" @click="now">Заезд сегодня</button>
       </div>
       <div class="filter-toggles">
