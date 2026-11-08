@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mapViewport, unclusterZoom } from '../../app/utils/map-viewport'
+import { mapBounds, mapLocation, mapViewport, unclusterZoom } from '../../app/utils/map-viewport'
 
 const property = { location: { lat: 44.5, lon: 34.2 } }
 describe('map camera with overlay panels', () => {
@@ -17,6 +17,14 @@ describe('map camera with overlay panels', () => {
     expect(broad.zoom).toBeLessThan(8)
     const empty = mapViewport([], 390, 844, [88, 16, 360, 16])
     expect(Number.isFinite(empty.lon) && Number.isFinite(empty.lat)).toBe(true)
+  })
+  it('builds an API location that frames every listing', () => {
+    expect(mapBounds([])).toBeNull()
+    expect(mapLocation([property])).toEqual({ center: [34.2, 44.5], zoom: 11 })
+    expect(mapLocation([property, { location: { lat: 48.7, lon: 44.5 } }])).toEqual({
+      bounds: [[34.2, 44.5], [44.5, 48.7]],
+    })
+    expect(mapLocation([])).toEqual({ center: [39, 45], zoom: 5 })
   })
   it('raises zoom until nearby mates leave the cluster grid', () => {
     const nearby = unclusterZoom(property.location, [{ lat: 44.5005, lon: 34.2005 }])

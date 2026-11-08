@@ -81,6 +81,7 @@ describe('Yandex Maps integration', () => {
     expect(wrapper.find('.map-show-all').exists()).toBe(true)
     expect(firstHint).toContain('&lt;img')
     expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('API 3.0'), expect.any(String))
+    expect(mapInstance!.setBounds).toHaveBeenCalledWith([[44, 34], [45, 35]], expect.objectContaining({ checkZoomRange: true }))
     wrapper.unmount()
     expect(mapInstance!.destroy).toHaveBeenCalledOnce()
   })
@@ -146,6 +147,7 @@ describe('Yandex Maps integration', () => {
     const wrapper = await mountSuspended(YandexMap, { props: { properties } })
     await flushPromises()
     expect(instance!.options.theme).toBe('dark')
+    expect(instance!.options.location).toEqual({ bounds: [[34.2, 44.5], [34.2005, 44.5005]] })
     expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({ location: { bounds: [[34.2, 44.5], [34.2005, 44.5005]] } }))
     expect(currentCluster!.options.features[0].geometry.coordinates).toEqual([34.2, 44.5])
     const marker = currentCluster!.options.marker(currentCluster!.options.features[0]) as FakeMarker

@@ -1,5 +1,5 @@
 <script setup>
-import { mapViewport, unclusterZoom } from '../utils/map-viewport'
+import { mapBounds, mapLocation, mapViewport, unclusterZoom } from '../utils/map-viewport'
 import { loadYandexApiV2, loadYandexApiV3 } from '../utils/yandex-maps-api'
 const CLUSTER_GRID = 128
 const props = defineProps({ properties: { type: Array, default: () => [] }, selected: { type: String, default: null }, padding: { type: Array, default: () => [60, 30, 150, 30] }, interactive: { type: Boolean, default: true } })
@@ -20,6 +20,8 @@ let focusZoom = null
 const userMoved = ref(false)
 const viewport = reactive({ width: 1200, height: 800 })
 const cameraPadding = computed(() => {
+  // Intro keeps the map full-bleed under the brand; search reserves the panel footprint.
+  if (!props.interactive) return [72, 48, 96, 48]
   const padding = [...props.padding]
   if (props.selected) padding[2] = Math.max(0, Math.min(viewport.height - padding[0] - 120, padding[2] + 150))
   return padding
@@ -97,22 +99,21 @@ function syncMarkersV2(fit = false) {
 function fitResults() {
   if (!map || !props.properties.length) return
   if (engine.value === 'v3') {
-    const points = props.properties.map(property => [property.location.lon, property.location.lat])
-    const lons = points.map(point => point[0]), lats = points.map(point => point[1])
-    const minLon = Math.min(...lons), maxLon = Math.max(...lons), minLat = Math.min(...lats), maxLat = Math.max(...lats)
-    const location = minLon === maxLon && minLat === maxLat
-      ? { center: [minLon, minLat], zoom: 11 }
-      : { bounds: [[minLon, minLat], [maxLon, maxLat]] }
-    map.update({ margin: cameraPadding.value, location })
+    map.update({ margin: cameraPadding.value, location: mapLocation(props.properties) })
     return
   }
   if (engine.value === 'v2') {
-    if (props.properties.length === 1) map.setCenter([props.properties[0].location.lat, props.properties[0].location.lon], 11, { checkZoomRange: true })
-    else {
-      const bounds = clusterer.getBounds()
-      if (bounds) map.setBounds(bounds, { checkZoomRange: true, zoomMargin: cameraPadding.value })
+    const bounds = mapBounds(props.properties)
+    if (!bounds) return
+    if (bounds.minLat === bounds.maxLat && bounds.minLon === bounds.maxLon) {
+      map.setCenter([bounds.minLat, bounds.minLon], 11, { checkZoomRange: true })
+      return
     }
+    map.setBounds([[bounds.minLat, bounds.minLon], [bounds.maxLat, bounds.maxLon]], { checkZoomRange: true, zoomMargin: cameraPadding.value })
   }
+}
+function initialCamera() {
+  return mapViewport(props.properties, viewport.width, viewport.height, cameraPadding.value)
 }
 function focusSelected() {
   const property = props.properties.find(item => item.id === props.selected)
@@ -142,7 +143,7 @@ async function mountV3(key) {
   if (disposed) return
   api = loaded.api
   clusterModule = loaded.cluster
-  map = new api.YMap(container.value, { location: { center: [34.23, 44.54], zoom: 10 }, margin: cameraPadding.value, theme: theme.value }, [
+  map = new api.YMap(container.value, { location: mapLocation(props.properties), margin: cameraPadding.value, theme: theme.value }, [
     new api.YMapDefaultSchemeLayer(), new api.YMapDefaultFeaturesLayer(),
   ])
   map.addChild(new api.YMapControls({ position: 'top right' }).addChild(new loaded.controls.YMapZoomControl({})))
@@ -155,7 +156,8 @@ async function mountV3(key) {
 async function mountV2(key) {
   const ymaps = await loadYandexApiV2(key)
   if (disposed) return
-  map = new ymaps.Map(container.value, { center: [44.54, 34.23], zoom: 10, controls: ['zoomControl'] }, { suppressMapOpenBlock: true })
+  const camera = initialCamera()
+  map = new ymaps.Map(container.value, { center: [camera.lat, camera.lon], zoom: camera.zoom, controls: ['zoomControl'] }, { suppressMapOpenBlock: true })
   clusterer = new ymaps.Clusterer({ gridSize: CLUSTER_GRID, clusterDisableClickZoom: true, clusterOpenBalloonOnClick: false, preset: 'islands#darkGreenClusterIcons' })
   clusterer.events.add('click', event => {
     const target = event.get('target')
