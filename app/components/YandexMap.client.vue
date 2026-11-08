@@ -126,6 +126,15 @@ function showAll() {
   if (engine.value === 'v3' && map?.center) map.update({ location: { center: [map.center[0], map.center[1]], zoom: map.zoom } })
   fitResults()
 }
+function adjustZoom(delta) {
+  if (!map) return
+  userMoved.value = true
+  if (engine.value === 'v3') {
+    map.update({ location: { center: map.center, zoom: map.zoom + delta } })
+    return
+  }
+  if (engine.value === 'v2') map.setZoom(map.getZoom() + delta, { checkZoomRange: true })
+}
 function measureViewport() { viewport.width = window.innerWidth; viewport.height = window.innerHeight }
 function observeResize() {
   if (typeof ResizeObserver === 'undefined' || !container.value) return
@@ -145,7 +154,6 @@ async function mountV3(key) {
   map = new api.YMap(container.value, { location: resultsLocation(), margin: cameraPadding.value, theme: theme.value }, [
     new api.YMapDefaultSchemeLayer(), new api.YMapDefaultFeaturesLayer(),
   ])
-  map.addChild(new api.YMapControls({ position: 'top right' }).addChild(new loaded.controls.YMapZoomControl({})))
   map.addChild(new api.YMapListener({ onClick: object => { if (object?.type === 'marker') return; clusterIds.value = []; emit('select', null) } }))
   engine.value = 'v3'
   mode.value = 'api'
@@ -156,7 +164,7 @@ async function mountV2(key) {
   const ymaps = await loadYandexApiV2(key)
   if (disposed) return
   const camera = initialCamera()
-  map = new ymaps.Map(container.value, { center: [camera.lat, camera.lon], zoom: camera.zoom, controls: ['zoomControl'] }, { suppressMapOpenBlock: true })
+  map = new ymaps.Map(container.value, { center: [camera.lat, camera.lon], zoom: camera.zoom, controls: [] }, { suppressMapOpenBlock: true })
   clusterer = new ymaps.Clusterer({ gridSize: CLUSTER_GRID, clusterDisableClickZoom: true, clusterOpenBalloonOnClick: false, preset: 'islands#darkGreenClusterIcons' })
   clusterer.events.add('click', event => {
     const target = event.get('target')
@@ -230,6 +238,10 @@ onBeforeUnmount(() => {
     <div v-if="mode === 'loading'" class="map-loading">Загружаем карту…</div>
     <div v-if="mode === 'widget' && interactive" class="map-provider-hint">Яндекс Карта · подробности объектов доступны в списке</div>
     <button v-if="mode === 'api' && interactive" class="map-show-all" @click.stop="showAll">Показать все объекты</button>
+    <div v-if="mode === 'api' && interactive" class="map-zoom" role="group" aria-label="Масштаб карты">
+      <button type="button" aria-label="Приблизить" @click.stop="adjustZoom(1)">+</button>
+      <button type="button" aria-label="Отдалить" @click.stop="adjustZoom(-1)">−</button>
+    </div>
     <section v-if="clusterProperties.length" class="map-cluster-list" aria-label="Объекты на карте">
       <div class="map-cluster-heading"><b>Объекты рядом · {{ clusterProperties.length }}</b><button aria-label="Закрыть список объектов" @click="clusterIds = []">×</button></div>
       <button v-for="property in clusterProperties" :key="property.id" class="map-cluster-item" @click="selectClusterProperty(property.id)"><span>{{ property.title }}<small>{{ property.city }}</small></span><b>{{ new Intl.NumberFormat('ru-RU').format(property.priceFrom) }} ₽<small>{{ property.rentalMode === 'long_term' ? '/мес' : '/ночь' }}</small></b></button>
@@ -237,7 +249,11 @@ onBeforeUnmount(() => {
   </div>
 </template>
 <style scoped>
-.map-show-all{position:absolute;top:var(--map-top,100px);right:24px;z-index:3;border:1px solid var(--border-main);border-radius:24px;padding:10px 14px;background:var(--surface-glass);color:var(--text-main);font-size:12px}
+.map-show-all{position:absolute;top:var(--map-top,100px);right:var(--map-right,24px);z-index:3;border:1px solid var(--border-main);border-radius:24px;padding:10px 14px;background:var(--surface-glass);color:var(--text-main);font-size:12px}
+.map-zoom{position:absolute;top:50%;right:var(--map-right,24px);z-index:3;display:flex;flex-direction:column;transform:translateY(-50%);border:1px solid var(--border-main);border-radius:16px;overflow:hidden;background:var(--surface-glass)}
+.map-zoom button{width:44px;height:44px;border:0;background:transparent;color:var(--text-main);font-size:22px;line-height:1}
+.map-zoom button+button{border-top:1px solid var(--border-main)}
+.map-zoom button:hover{background:var(--surface-control)}
 .map-cluster-list{position:absolute;z-index:6;inset:auto 12px 25px;background:var(--surface-glass);border:1px solid var(--border-main);border-radius:16px;padding:12px;max-height:min(320px,70%);overflow:auto;color:var(--text-main)}.map-cluster-heading,.map-cluster-item{display:flex;align-items:center;justify-content:space-between;gap:12px}.map-cluster-heading button{border:0;background:transparent;color:inherit;font-size:24px;width:44px;height:44px}.map-cluster-item{width:100%;min-height:54px;padding:8px 4px;border:0;border-top:1px solid var(--border-main);background:transparent;color:inherit;text-align:left}.map-cluster-item span{min-width:0}.map-cluster-item b{text-align:right;white-space:nowrap}.map-cluster-item small{display:block;color:var(--text-muted);font-size:11px}
 
 :deep(.map-price-marker),:deep(.map-cluster-marker){border:1px solid var(--map-marker-border,#fff);background:var(--map-marker-bg,#142019);color:var(--map-marker-fg,#fff);font-size:12px;font-weight:800;box-shadow:0 3px 12px var(--map-marker-shadow,#0006);cursor:pointer}

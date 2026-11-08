@@ -13,6 +13,10 @@ const mapLayer = ref(null)
 const viewport = reactive({ width: 1200, height: 800 })
 const motion = computed(() => introMotion(progress.value, viewport.width, viewport.height))
 provide('homeIntroMap', { layer: mapLayer, progress, contentOpacity: computed(() => motion.value.contentOpacity), reducedMotion })
+const introCoversChrome = useState('home-intro-covers-chrome', () => false)
+watchEffect(() => {
+  introCoversChrome.value = !reducedMotion.value && motion.value.contentOpacity < .99
+})
 const gridStyle = computed(() => ({
   width: `${motion.value.geometry.gridWidth}px`,
   '--intro-tile-height': `${motion.value.geometry.tileHeight}px`,
@@ -85,6 +89,7 @@ onMounted(() => {
   onScroll()
 })
 onBeforeUnmount(() => {
+  introCoversChrome.value = false
   motionPreference?.removeEventListener('change', updateMotionPreference)
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', onScroll)
@@ -133,7 +138,7 @@ onBeforeUnmount(() => {
 .home-intro[aria-hidden=true]{visibility:hidden}
 .search-anchor{position:absolute;top:300svh;left:0}
 .intro-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;isolation:isolate}
-.intro-stage::before{content:'';position:absolute;inset:0;background:var(--intro-map-veil,#080c0a);opacity:calc(.58 * (1 - var(--content-opacity)));z-index:-1}
+.intro-stage::before{content:'';position:absolute;inset:0;background:var(--intro-map-veil,#080c0a);opacity:calc(.78 * (1 - var(--content-opacity)));z-index:-1}
 .intro-grid-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 .intro-tiles{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,var(--intro-tile-height));gap:var(--intro-row-gap) var(--intro-column-gap);will-change:transform}
 .intro-tile{min-width:0;min-height:0;overflow:hidden;will-change:transform,opacity}

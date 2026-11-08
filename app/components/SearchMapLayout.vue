@@ -39,7 +39,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
       <slot />
     </section>
     <Teleport :to="intro?.layer.value || 'body'" :disabled="!intro?.layer.value">
-      <div class="search-map-layer" :style="mapStyle" :inert="isIntro || undefined" :aria-hidden="isIntro || undefined">
+      <div class="search-map-layer" :class="{ 'is-intro': isIntro }" :style="mapStyle" :inert="isIntro || undefined" :aria-hidden="isIntro || undefined">
         <slot name="map" :padding="padding" :interactive="!isIntro" />
       </div>
     </Teleport>
@@ -50,9 +50,11 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
 .search-workspace{position:fixed;inset:0;pointer-events:none}
 .search-panel{position:fixed;z-index:3;top:96px;bottom:24px;left:24px;width:min(460px,40vw);padding:20px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;pointer-events:auto;background:var(--surface-glass);border:1px solid #465448;border-radius:20px;box-shadow:0 12px 40px #0004}
 .search-panel-handle{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:36px;border:0;background:none;color:var(--text-muted);font-size:12px;margin-bottom:14px}
-.search-map-layer{position:fixed;inset:0;z-index:0;pointer-events:auto}
+.search-map-layer{position:fixed;inset:0;z-index:0;pointer-events:auto;filter:none;transition:filter .5s ease}
+.search-map-layer.is-intro{filter:grayscale(1)}
 .search-map-layer[inert]{pointer-events:none}
 .search-map-layer :deep(.map){position:absolute;inset:0;height:100%;min-height:0;border:0;border-radius:0}
+@media(prefers-reduced-motion:reduce){.search-map-layer{transition:none}}
 .search-map-layer :deep(.map-card){left:auto;right:24px;bottom:48px;width:min(440px,calc(100vw - var(--map-left) - 48px))}
 .search-map-layer :deep(.map-empty){left:calc(var(--map-left) + (100% - var(--map-left) - var(--map-right))/2);top:calc(var(--map-top) + (100% - var(--map-top) - var(--map-bottom))/2)}
 .search-map-layer :deep(.map-provider-hint){top:var(--map-top);left:var(--map-left);max-width:calc(100% - var(--map-left) - var(--map-right))}

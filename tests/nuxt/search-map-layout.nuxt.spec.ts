@@ -17,10 +17,12 @@ describe('search over a persistent viewport map', () => {
       const mapLayer = layer.querySelector('.search-map-layer')!
       expect(mapNode).not.toBeNull()
       expect(mapLayer.hasAttribute('inert')).toBe(true)
+      expect(mapLayer.classList.contains('is-intro')).toBe(true)
       contentOpacity.value = .99
       await nextTick()
       expect(layer.querySelector('.test-map')).toBe(mapNode)
       expect(mapLayer.hasAttribute('inert')).toBe(false)
+      expect(mapLayer.classList.contains('is-intro')).toBe(false)
       contentOpacity.value = 1
       await nextTick()
       expect(mapLayer.hasAttribute('inert')).toBe(false)

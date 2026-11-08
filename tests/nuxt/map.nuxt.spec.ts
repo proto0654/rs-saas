@@ -130,6 +130,7 @@ describe('Yandex Maps integration', () => {
     let currentCluster: FakeClusterer
     class FakeMap {
       zoom = 9
+      center = [34.20025, 44.50025]
       update = vi.fn()
       addChild = vi.fn()
       removeChild = vi.fn()
@@ -142,13 +143,10 @@ describe('Yandex Maps integration', () => {
     class FakeMarker {
       constructor(public options: any, public element: HTMLElement) {}
     }
-    class FakeControls { addChild() { return this } }
-    const load = Object.assign(vi.fn(async (name: string) => name.includes('clusterer')
-      ? { YMapClusterer: FakeClusterer, clusterByGrid: vi.fn() }
-      : { YMapZoomControl: class {} }), { registerCdn: vi.fn() })
+    const load = Object.assign(vi.fn(async () => ({ YMapClusterer: FakeClusterer, clusterByGrid: vi.fn() })), { registerCdn: vi.fn() })
     vi.stubGlobal('ymaps3', {
       ready: Promise.resolve(), import: load, YMap: FakeMap, YMapMarker: FakeMarker,
-      YMapDefaultSchemeLayer: class {}, YMapDefaultFeaturesLayer: class {}, YMapControls: FakeControls, YMapListener: class {},
+      YMapDefaultSchemeLayer: class {}, YMapDefaultFeaturesLayer: class {}, YMapListener: class {},
     })
     vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} })
     const wrapper = await mountSuspended(YandexMap, { props: { properties } })
@@ -192,6 +190,11 @@ describe('Yandex Maps integration', () => {
     expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({
       location: expect.objectContaining({ center: [34.20025, 44.50025], zoom: expect.any(Number) }),
     }))
+    expect(wrapper.get('.map-zoom').classes()).toContain('map-zoom')
+    instance!.update.mockClear()
+    instance!.zoom = 12
+    await wrapper.get('[aria-label="Приблизить"]').trigger('click')
+    expect(instance!.update).toHaveBeenCalledWith({ location: { center: [34.20025, 44.50025], zoom: 13 } })
     wrapper.unmount()
     expect(instance!.destroy).toHaveBeenCalledOnce()
   })

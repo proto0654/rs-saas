@@ -21,13 +21,11 @@ export function loadYandexApiV3(key: string) {
         await api.ready
         stage = 'packages'
         api.import.registerCdn('https://cdn.jsdelivr.net/npm/{package}', [
-          '@yandex/ymaps3-clusterer@0.0', '@yandex/ymaps3-default-ui-theme@0.0',
+          '@yandex/ymaps3-clusterer@0.0',
         ])
-        const [cluster, controls] = await Promise.all([
-          api.import('@yandex/ymaps3-clusterer'), api.import('@yandex/ymaps3-default-ui-theme'),
-        ])
+        const cluster = await api.import('@yandex/ymaps3-clusterer')
         window.clearTimeout(timeout)
-        resolve({ api, cluster, controls })
+        resolve({ api, cluster })
       } catch { window.clearTimeout(timeout); fail() }
     }
     timeout = window.setTimeout(fail, 12000)
