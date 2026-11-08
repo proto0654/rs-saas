@@ -18,13 +18,18 @@ describe('map camera with overlay panels', () => {
     const empty = mapViewport([], 390, 844, [88, 16, 360, 16])
     expect(Number.isFinite(empty.lon) && Number.isFinite(empty.lat)).toBe(true)
   })
-  it('builds an API location that frames every listing', () => {
+  it('builds a tight API location that frames every listing', () => {
     expect(mapBounds([])).toBeNull()
-    expect(mapLocation([property])).toEqual({ center: [34.2, 44.5], zoom: 11 })
-    expect(mapLocation([property, { location: { lat: 48.7, lon: 44.5 } }])).toEqual({
-      bounds: [[34.2, 44.5], [44.5, 48.7]],
-    })
-    expect(mapLocation([])).toEqual({ center: [39, 45], zoom: 5 })
+    const single = mapLocation([property], 1400, 900, [0, 0, 0, 0])
+    expect(single.center).toEqual([34.2, 44.5])
+    expect(single.zoom).toBeGreaterThanOrEqual(11)
+    const broad = mapLocation([property, { location: { lat: 48.7, lon: 44.5 } }], 1400, 900, [100, 24, 48, 500])
+    expect(broad.center[0]).toBeCloseTo(39.35)
+    expect(broad.center[1]).toBeCloseTo(46.6)
+    expect(broad.zoom).toBeGreaterThan(5)
+    expect(broad.zoom).toBeLessThan(8)
+    const floored = Math.floor(broad.zoom)
+    expect(broad.zoom).toBeGreaterThan(floored)
   })
   it('raises zoom until nearby mates leave the cluster grid', () => {
     const nearby = unclusterZoom(property.location, [{ lat: 44.5005, lon: 34.2005 }])

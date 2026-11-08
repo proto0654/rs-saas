@@ -21,17 +21,8 @@ export function mapBounds(properties: Location[]) {
   }
 }
 
-/** API 3.0 `location` that frames every listing (pair with map `margin`). */
-export function mapLocation(properties: Location[]) {
-  const bounds = mapBounds(properties)
-  if (!bounds) return { center: [EMPTY_CENTER.lon, EMPTY_CENTER.lat] as [number, number], zoom: 5 }
-  const { minLat, maxLat, minLon, maxLon } = bounds
-  if (minLon === maxLon && minLat === maxLat) return { center: [minLon, minLat] as [number, number], zoom: 11 }
-  return { bounds: [[minLon, minLat], [maxLon, maxLat]] as [[number, number], [number, number]] }
-}
-
-// Web Mercator camera for the keyless widget / API 2.1, including space covered by UI.
-export function mapViewport(properties: Location[], width: number, height: number, padding: number[]) {
+/** Zoom that tightly frames listings inside the free viewport (panel padding excluded). */
+export function mapFitZoom(properties: Location[], width: number, height: number, padding: number[]) {
   const points = (properties.length ? properties : [{ location: EMPTY_CENTER }]).map(item => project(item.location))
   const xs = points.map(point => point[0]), ys = points.map(point => point[1])
   const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys)
@@ -40,7 +31,26 @@ export function mapViewport(properties: Location[], width: number, height: numbe
   const availableHeight = Math.max(80, height - top - bottom)
   const horizontalScale = availableWidth / (TILE * Math.max(maxX - minX, .00001))
   const verticalScale = availableHeight / (TILE * Math.max(maxY - minY, .00001))
-  const zoom = Math.max(2, Math.min(11, Math.floor(Math.log2(Math.min(horizontalScale, verticalScale)))))
+  // Fractional zoom keeps the frame tight; floor previously left almost a full level of empty map.
+  return Math.max(2, Math.min(12, Math.log2(Math.min(horizontalScale, verticalScale))))
+}
+
+/** API 3.0 `location` that frames every listing (pair with map `margin` = padding). */
+export function mapLocation(properties: Location[], width = 1200, height = 800, padding: number[] = [0, 0, 0, 0]) {
+  const bounds = mapBounds(properties)
+  const zoom = mapFitZoom(properties, width, height, padding)
+  if (!bounds) return { center: [EMPTY_CENTER.lon, EMPTY_CENTER.lat] as [number, number], zoom }
+  const { minLat, maxLat, minLon, maxLon } = bounds
+  return { center: [(minLon + maxLon) / 2, (minLat + maxLat) / 2] as [number, number], zoom: minLon === maxLon && minLat === maxLat ? Math.max(zoom, 11) : zoom }
+}
+
+// Web Mercator camera for the keyless widget / API 2.1, including space covered by UI.
+export function mapViewport(properties: Location[], width: number, height: number, padding: number[]) {
+  const points = (properties.length ? properties : [{ location: EMPTY_CENTER }]).map(item => project(item.location))
+  const xs = points.map(point => point[0]), ys = points.map(point => point[1])
+  const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys)
+  const [top = 0, right = 0, bottom = 0, left = 0] = padding
+  const zoom = mapFitZoom(properties, width, height, padding)
   const worldSize = TILE * 2 ** zoom
   const x = (minX + maxX) / 2 - (left - right) / (2 * worldSize)
   const y = (minY + maxY) / 2 - (top - bottom) / (2 * worldSize)

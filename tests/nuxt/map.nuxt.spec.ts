@@ -81,7 +81,14 @@ describe('Yandex Maps integration', () => {
     expect(wrapper.find('.map-show-all').exists()).toBe(true)
     expect(firstHint).toContain('&lt;img')
     expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('API 3.0'), expect.any(String))
-    expect(mapInstance!.setBounds).toHaveBeenCalledWith([[44, 34], [45, 35]], expect.objectContaining({ checkZoomRange: true }))
+    expect(mapInstance!.setCenter).toHaveBeenCalledWith(
+      [expect.any(Number), expect.any(Number)],
+      expect.any(Number),
+      expect.objectContaining({ checkZoomRange: true }),
+    )
+    const [, zoom] = mapInstance!.setCenter.mock.calls.at(-1)!
+    expect(zoom).toBeGreaterThan(4)
+    expect(zoom).toBeLessThan(10)
     wrapper.unmount()
     expect(mapInstance!.destroy).toHaveBeenCalledOnce()
   })
@@ -147,8 +154,14 @@ describe('Yandex Maps integration', () => {
     const wrapper = await mountSuspended(YandexMap, { props: { properties } })
     await flushPromises()
     expect(instance!.options.theme).toBe('dark')
-    expect(instance!.options.location).toEqual({ bounds: [[34.2, 44.5], [34.2005, 44.5005]] })
-    expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({ location: { bounds: [[34.2, 44.5], [34.2005, 44.5005]] } }))
+    expect(instance!.options.location).toEqual(expect.objectContaining({
+      center: [34.20025, 44.50025],
+      zoom: expect.any(Number),
+    }))
+    expect(instance!.options.location.zoom).toBeGreaterThan(10)
+    expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({
+      location: expect.objectContaining({ center: [34.20025, 44.50025], zoom: expect.any(Number) }),
+    }))
     expect(currentCluster!.options.features[0].geometry.coordinates).toEqual([34.2, 44.5])
     const marker = currentCluster!.options.marker(currentCluster!.options.features[0]) as FakeMarker
     expect(marker.element.textContent).toContain('1 000 ₽')
@@ -175,7 +188,9 @@ describe('Yandex Maps integration', () => {
     await wrapper.setProps({ padding: [100, 24, 48, 500] })
     expect(instance!.update).not.toHaveBeenCalledWith(expect.objectContaining({ location: expect.anything() }))
     await wrapper.get('.map-show-all').trigger('click')
-    expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({ location: expect.objectContaining({ bounds: expect.any(Array) }) }))
+    expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({
+      location: expect.objectContaining({ center: [34.20025, 44.50025], zoom: expect.any(Number) }),
+    }))
     wrapper.unmount()
     expect(instance!.destroy).toHaveBeenCalledOnce()
   })

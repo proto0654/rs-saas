@@ -1,5 +1,5 @@
 <script setup>
-import { mapBounds, mapLocation, mapViewport, unclusterZoom } from '../utils/map-viewport'
+import { mapLocation, mapViewport, unclusterZoom } from '../utils/map-viewport'
 import { loadYandexApiV2, loadYandexApiV3 } from '../utils/yandex-maps-api'
 const CLUSTER_GRID = 128
 const props = defineProps({ properties: { type: Array, default: () => [] }, selected: { type: String, default: null }, padding: { type: Array, default: () => [60, 30, 150, 30] }, interactive: { type: Boolean, default: true } })
@@ -20,12 +20,13 @@ let focusZoom = null
 const userMoved = ref(false)
 const viewport = reactive({ width: 1200, height: 800 })
 const cameraPadding = computed(() => {
-  // Intro keeps the map full-bleed under the brand; search reserves the panel footprint.
-  if (!props.interactive) return [72, 48, 96, 48]
   const padding = [...props.padding]
   if (props.selected) padding[2] = Math.max(0, Math.min(viewport.height - padding[0] - 120, padding[2] + 150))
   return padding
 })
+function resultsLocation() {
+  return mapLocation(props.properties, viewport.width, viewport.height, cameraPadding.value)
+}
 const clusterIds = ref([])
 const clusterProperties = computed(() => props.properties.filter(property => clusterIds.value.includes(property.id)))
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
@@ -99,17 +100,12 @@ function syncMarkersV2(fit = false) {
 function fitResults() {
   if (!map || !props.properties.length) return
   if (engine.value === 'v3') {
-    map.update({ margin: cameraPadding.value, location: mapLocation(props.properties) })
+    map.update({ margin: cameraPadding.value, location: resultsLocation() })
     return
   }
   if (engine.value === 'v2') {
-    const bounds = mapBounds(props.properties)
-    if (!bounds) return
-    if (bounds.minLat === bounds.maxLat && bounds.minLon === bounds.maxLon) {
-      map.setCenter([bounds.minLat, bounds.minLon], 11, { checkZoomRange: true })
-      return
-    }
-    map.setBounds([[bounds.minLat, bounds.minLon], [bounds.maxLat, bounds.maxLon]], { checkZoomRange: true, zoomMargin: cameraPadding.value })
+    const camera = initialCamera()
+    map.setCenter([camera.lat, camera.lon], camera.zoom, { checkZoomRange: true })
   }
 }
 function initialCamera() {
@@ -143,7 +139,7 @@ async function mountV3(key) {
   if (disposed) return
   api = loaded.api
   clusterModule = loaded.cluster
-  map = new api.YMap(container.value, { location: mapLocation(props.properties), margin: cameraPadding.value, theme: theme.value }, [
+  map = new api.YMap(container.value, { location: resultsLocation(), margin: cameraPadding.value, theme: theme.value }, [
     new api.YMapDefaultSchemeLayer(), new api.YMapDefaultFeaturesLayer(),
   ])
   map.addChild(new api.YMapControls({ position: 'top right' }).addChild(new loaded.controls.YMapZoomControl({})))
