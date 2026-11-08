@@ -35,9 +35,9 @@ onMounted(() => {
 .map-search-shell{padding-bottom:0;min-height:100dvh}
 .map-search-shell>.topbar{position:fixed;z-index:8;top:0;left:0;right:0;max-width:none;background:transparent;pointer-events:auto}
 .map-search-shell>.topbar:not(.is-intro){background:color-mix(in srgb,var(--surface-page) 62%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.map-search-shell>.topbar.is-intro{color:#f5f4eb;border-bottom-color:#ffffff2e}
-.map-search-shell>.topbar.is-intro .desktop-links{color:#a8b1a4}
-.map-search-shell>.topbar.is-intro .logo span{color:#d0f35b}
+.map-search-shell>.topbar.is-intro{color:var(--text-main);border-bottom-color:color-mix(in srgb,var(--text-main) 18%,transparent)}
+.map-search-shell>.topbar.is-intro .desktop-links{color:var(--text-muted)}
+.map-search-shell>.topbar.is-intro .logo span{color:var(--accent-text)}
 .map-search-shell>.bottom-nav{pointer-events:auto}
 .theme-toggle{flex:none;display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--border-main);border-radius:50%;background:var(--surface-card);color:var(--text-main);font-size:22px}
 @media(max-width:800px){.topbar{gap:8px}.theme-toggle{width:44px;height:44px}.context-switch{margin-left:auto}}

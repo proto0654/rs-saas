@@ -59,6 +59,35 @@ describe('legacy state storage backup', () => {
       expect(values.has('rs-saas-demo:catalog-backup')).toBe(false)
     } finally { vi.unstubAllGlobals() }
   })
+  it('updates only untouched demo photos in an existing catalog', () => {
+    const db = structuredClone(seed)
+    const getProperty = (id: string) => db.properties.find(property => property.id === id)!
+    getProperty('p33').images = ['/demo/ordinary-apartment-2.png']
+    getProperty('p34').images = ['/my-photo.jpg']
+    getProperty('p35').images = ['/demo/ordinary-apartment-2.png', '/my-photo.jpg']
+    getProperty('p36').images = ['/demo/ordinary-apartment-2.png']
+    getProperty('p36').city = 'Custom city'
+    const raw = JSON.stringify({ catalogVersion: 1, db, favorites: ['p2'], filters: seed.defaultSearch, role: 'guest', personalBot: null, audit: [] })
+    const values = new Map([['rs-saas-demo', raw]])
+    vi.stubGlobal('localStorage', { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) })
+    try {
+      setActivePinia(createPinia()); const store = useDemoStore(); store.restore()
+      const restored = (id: string) => store.data!.db.properties.find(property => property.id === id)!
+      expect(store.restoreWarning).toBe(false)
+      expect(restored('p33').images).toEqual(['/demo/listing-p33.jpg'])
+      expect(restored('p34').images).toEqual(['/my-photo.jpg'])
+      expect(restored('p35').images).toEqual(['/demo/ordinary-apartment-2.png', '/my-photo.jpg'])
+      expect(restored('p36').images).toEqual(['/demo/ordinary-apartment-2.png'])
+      expect(store.data!.db.bookings).toEqual(db.bookings)
+      expect(store.data!.favorites).toEqual(['p2'])
+      expect(values.get('rs-saas-demo:photos-backup')).toBe(raw)
+      store.toggleFavorite('p1'); store.restore()
+      expect(restored('p33').images).toEqual(['/demo/listing-p33.jpg'])
+      expect(values.get('rs-saas-demo:photos-backup')).toBe(raw)
+      store.reset()
+      expect(values.has('rs-saas-demo:photos-backup')).toBe(false)
+    } finally { vi.unstubAllGlobals() }
+  })
   it('backs up v1 before a later save and clears only project keys on reset', () => {
     const db={...structuredClone(seed),schemaVersion:1,properties:seed.properties.slice(0,8),units:seed.units.slice(0,20),bookings:seed.bookings.slice(0,9)}
     const raw=JSON.stringify({db,favorites:['p2'],filters:seed.defaultSearch,role:'guest',personalBot:null,audit:[]})

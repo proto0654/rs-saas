@@ -21,7 +21,7 @@ export function mapBounds(properties: Location[]) {
   }
 }
 
-/** Zoom that tightly frames listings inside the free viewport (panel padding excluded). */
+/** Zoom that tightly frames listings inside the free viewport (padding excluded). */
 export function mapFitZoom(properties: Location[], width: number, height: number, padding: number[]) {
   const points = (properties.length ? properties : [{ location: EMPTY_CENTER }]).map(item => project(item.location))
   const xs = points.map(point => point[0]), ys = points.map(point => point[1])
@@ -45,16 +45,18 @@ export function mapLocation(properties: Location[], width = 1200, height = 800, 
 }
 
 // Web Mercator camera for the keyless widget / API 2.1, including space covered by UI.
-export function mapViewport(properties: Location[], width: number, height: number, padding: number[]) {
+// Pass `zoom` when the camera uses a different level than fit (focus/uncluster); pixel padding
+// must convert at that same zoom or the pin drifts out of the free area.
+export function mapViewport(properties: Location[], width: number, height: number, padding: number[], zoom?: number) {
   const points = (properties.length ? properties : [{ location: EMPTY_CENTER }]).map(item => project(item.location))
   const xs = points.map(point => point[0]), ys = points.map(point => point[1])
   const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys)
   const [top = 0, right = 0, bottom = 0, left = 0] = padding
-  const zoom = mapFitZoom(properties, width, height, padding)
-  const worldSize = TILE * 2 ** zoom
+  const level = zoom ?? mapFitZoom(properties, width, height, padding)
+  const worldSize = TILE * 2 ** level
   const x = (minX + maxX) / 2 - (left - right) / (2 * worldSize)
   const y = (minY + maxY) / 2 - (top - bottom) / (2 * worldSize)
-  return { lon: x * 360 - 180, lat: Math.atan(Math.sinh(Math.PI * (1 - 2 * y))) * 180 / Math.PI, zoom }
+  return { lon: x * 360 - 180, lat: Math.atan(Math.sinh(Math.PI * (1 - 2 * y))) * 180 / Math.PI, zoom: level }
 }
 
 /** Zoom where `target` is past the cluster grid from every mate (cell-alignment buffer included). */
@@ -68,8 +70,9 @@ export function unclusterZoom(target: Location['location'], mates: Location['loc
       needed = maxZoom
       continue
     }
-    // pixels ≈ dist * 256 * 2^z; require > 2 * gridSize so neighbors leave one grid cell.
-    needed = Math.max(needed, Math.log2((gridSize * 2) / (TILE * dist)))
+    // pixels ≈ dist * 256 * 2^z; require > 2 * gridSize so neighbors leave one grid cell,
+    // then +1 for cell-phase / fractional-zoom rounding so the pin is not left inside a cluster.
+    needed = Math.max(needed, Math.log2((gridSize * 2) / (TILE * dist)) + 1)
   }
   return Math.min(maxZoom, Math.max(0, Math.ceil(needed)))
 }

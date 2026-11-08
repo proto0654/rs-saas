@@ -132,9 +132,9 @@ onBeforeUnmount(() => {
 .home-search-track{min-width:0}
 .home-search-runway{height:300svh;pointer-events:none}
 .home-search{position:sticky;top:0;min-height:100svh;z-index:2;pointer-events:none}
-.intro-heading{position:relative;z-index:2;height:100svh;display:grid;place-items:center;color:#f5f4eb;pointer-events:none;opacity:calc(1 - var(--content-opacity))}
+.intro-heading{position:relative;z-index:2;height:100svh;display:grid;place-items:center;color:var(--text-main);pointer-events:none;opacity:calc(1 - var(--content-opacity))}
 .search-content{position:fixed;inset:0;opacity:var(--content-opacity);pointer-events:none}
-.home-intro{position:relative;height:400svh;color:#f5f4eb;z-index:1;pointer-events:none}
+.home-intro{position:relative;height:400svh;color:var(--text-main);z-index:1;pointer-events:none}
 .home-intro[aria-hidden=true]{visibility:hidden}
 .search-anchor{position:absolute;top:300svh;left:0}
 .intro-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;isolation:isolate}
@@ -146,9 +146,9 @@ onBeforeUnmount(() => {
 .intro-copy{position:relative;z-index:1;text-align:center;pointer-events:none}
 .intro-brand{font-size:clamp(76px,13vw,180px);font-weight:900;letter-spacing:-.085em;line-height:1.05;background:#d0f35b url('/demo/intro-map.svg') center/cover;-webkit-background-clip:text;background-clip:text;color:transparent}
 .intro-brand span{color:#d0f35b}
-.intro-copy p{margin-top:12px;font-size:clamp(15px,1.6vw,20px);color:#f5f4eb}
-.intro-scroll{position:absolute;z-index:2;bottom:max(30px,env(safe-area-inset-bottom));display:flex;align-items:center;flex-direction:column;gap:12px;color:#f5f4eb;font-size:10px;font-weight:800;letter-spacing:.2em;pointer-events:auto;opacity:calc(1 - var(--content-opacity))}
-.intro-scroll-line{height:36px;width:1px;background:#a8b1a4}
+.intro-copy p{margin-top:12px;font-size:clamp(15px,1.6vw,20px);color:var(--text-main)}
+.intro-scroll{position:absolute;z-index:2;bottom:max(30px,env(safe-area-inset-bottom));display:flex;align-items:center;flex-direction:column;gap:12px;color:var(--text-main);font-size:10px;font-weight:800;letter-spacing:.2em;pointer-events:auto;opacity:calc(1 - var(--content-opacity))}
+.intro-scroll-line{height:36px;width:1px;background:var(--text-muted)}
 .intro-search-link{letter-spacing:0;font-size:12px;font-weight:600}
 .intro-scroll:focus-visible{outline:2px solid #d0f35b;outline-offset:8px}
 @media(max-width:600px){.intro-copy{padding:0 20px}.intro-brand{font-size:clamp(68px,16vw,100px)}}

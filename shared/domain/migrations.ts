@@ -1,7 +1,7 @@
 import seed from '../../demo/seed.json'
 
 export const demoSchemaVersion = seed.schemaVersion
-export const demoCatalogVersion = 1
+export const demoCatalogVersion = 2
 const premiumIds = new Set(['p61', 'p62', 'p63'])
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value)
 
@@ -23,7 +23,7 @@ export function upgradeDemoState(value: unknown): unknown {
     database.defaultSearch = structuredClone(seed.defaultSearch)
     upgraded = result
   }
-  return addPremiumExamples(upgraded)
+  return updateExamplePhotos(addPremiumExamples(upgraded))
 }
 
 function addPremiumExamples(value: unknown): unknown {
@@ -40,6 +40,34 @@ function addPremiumExamples(value: unknown): unknown {
   resultDb.properties.push(...structuredClone(additions))
   const addedIds = new Set(additions.map(property => property.id))
   resultDb.units.push(...structuredClone(seed.units.filter(unit => addedIds.has(unit.propertyId))))
+  result.catalogVersion = 1
+  return result
+}
+
+function previousExampleImage(id: string): string | null {
+  const n = Number(id.slice(1))
+  if (!/^p\d+$/.test(id)) return null
+  if (n >= 6 && n <= 8) return `/demo/photo-p${n}.png`
+  if (n === 9 || n === 21) return '/demo/ordinary-apartment-1.png'
+  if (n >= 10 && n <= 44) return '/demo/ordinary-apartment-2.png'
+  if (n >= 45 && n <= 52) return '/demo/photo-p4.png'
+  if (n >= 53 && n <= 60) return '/demo/photo-p2.png'
+  return null
+}
+
+function updateExamplePhotos(value: unknown): unknown {
+  if (!record(value) || !record(value.db) || value.catalogVersion !== 1 || !Array.isArray(value.db.properties)) return value
+  const examples = new Map(seed.properties.map(property => [property.id, property]))
+  const result = structuredClone(value)
+  const db = result.db as { properties: unknown[] }
+  for (const property of db.properties) {
+    if (!record(property) || typeof property.id !== 'string') continue
+    const example = examples.get(property.id)
+    const previousImage = previousExampleImage(property.id)
+    if (!example || !previousImage || property.ownerId !== example.ownerId || property.type !== example.type || property.city !== example.city) continue
+    if (!Array.isArray(property.images) || property.images.length !== 1 || property.images[0] !== previousImage) continue
+    property.images = structuredClone(example.images)
+  }
   result.catalogVersion = demoCatalogVersion
   return result
 }

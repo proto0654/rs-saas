@@ -40,4 +40,14 @@ describe('map camera with overlay panels', () => {
     expect(distant).toBeLessThan(12)
     expect(twin).toBe(21)
   })
+  it('converts free-area padding at the camera zoom used for focus', () => {
+    const fitted = mapViewport([property], 1400, 900, [100, 24, 198, 500])
+    const focused = mapViewport([property], 1400, 900, [100, 24, 198, 500], 17)
+    expect(fitted.zoom).toBeLessThan(17)
+    // Higher zoom → smaller geographic shift for the same pixel padding.
+    expect(Math.abs(focused.lon - property.location.lon)).toBeLessThan(Math.abs(fitted.lon - property.location.lon))
+    expect(Math.abs(focused.lat - property.location.lat)).toBeLessThan(Math.abs(fitted.lat - property.location.lat))
+    expect(focused.lon).toBeLessThan(property.location.lon)
+    expect(focused.lat).toBeLessThan(property.location.lat)
+  })
 })

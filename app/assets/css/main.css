@@ -70,7 +70,7 @@
   --surface-input:#f8faf5; --surface-sheet:#ffffff; --surface-control:#e2e9de; --surface-glass:#fffffff2;
   --text-main:#17231b; --text-muted:#536457; --border-main:#cbd6c9; --accent-text:#466c19;
   --map-marker-bg:#ffffff; --map-marker-fg:#17231b; --map-marker-border:#17231b; --map-marker-shadow:#0003;
-  --intro-map-veil:#080c0a;
+  --intro-map-veil:#ffffff;
 }
 @theme {
   --color-muted: #a8b1a4;

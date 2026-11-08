@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest'
+import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import seed from '../../demo/seed.json'
 import type { Database, Unit } from '../../shared/types/demo'
 import { search, available, quote, createBooking, overlaps, blockingStatuses } from '../../shared/domain/booking'
@@ -23,6 +26,11 @@ describe('presentation catalog', () => {
     expect(search(db,{checkIn:'2027-06-12',checkOut:'2027-06-16',guests:2,region:'krasnodar'}).every(p => p.region === 'krasnodar')).toBe(true)
     expect(search(db,{checkIn:'2027-06-12',checkOut:'2027-06-16',guests:2,city:'Краснодар'}).some(p=>p.type==='apartment')).toBe(true)
     expect(search(db,{checkIn:'2027-06-12',checkOut:'2027-07-12',guests:2,city:'Краснодар',rentalMode:'long_term'}).length).toBeGreaterThan(0)
+  })
+  it('uses a different, available cover image for every published listing', () => {
+    const covers = db.properties.filter(p => p.status === 'published').map(p => p.images[0]!)
+    const hashes = covers.map(path => createHash('sha256').update(readFileSync(join(process.cwd(), 'public', path))).digest('hex'))
+    expect(new Set(hashes).size).toBe(covers.length)
   })
   it('filters premium properties and combines the selection with budget', () => {
     const premium = search(db, {...db.defaultSearch, premium: true})

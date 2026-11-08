@@ -131,7 +131,10 @@ describe('Yandex Maps integration', () => {
     class FakeMap {
       zoom = 9
       center = [34.20025, 44.50025]
-      update = vi.fn()
+      update = vi.fn((options: any = {}) => {
+        if (options.location?.zoom != null) this.zoom = options.location.zoom
+        if (options.location?.center) this.center = options.location.center
+      })
       addChild = vi.fn()
       removeChild = vi.fn()
       destroy = vi.fn()
@@ -171,12 +174,44 @@ describe('Yandex Maps integration', () => {
     expect(wrapper.get('.map-cluster-list').text()).toContain('Другая квартира')
     await wrapper.findAll('.map-cluster-item')[1]!.trigger('click')
     expect(wrapper.emitted('select')?.[0]).toEqual(['two'])
-    await wrapper.setProps({ selected: 'two' })
-    expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({
-      location: { center: [34.2005, 44.5005], zoom: expect.any(Number) },
-    }))
-    const focused = instance!.update.mock.calls.map(call => call[0]?.location).find(location => location?.center?.[0] === 34.2005)
-    expect(focused?.zoom).toBeGreaterThan(15)
+    instance!.zoom = 9
+    instance!.update.mockClear()
+    // Marker pointerdown would otherwise lock the camera before select; selection must reclaim it.
+    await wrapper.trigger('pointerdown')
+    await wrapper.setProps({ selected: 'two', padding: [100, 24, 48, 500] })
+    const focusCall = instance!.update.mock.calls.at(-1)?.[0]
+    // API 3.0: geographic pin + focus margin (panel + preview card). No manual lon/lat shift.
+    expect(focusCall?.margin).toEqual([100, 24, 198, 500])
+    expect(focusCall?.location.center).toEqual([34.2005, 44.5005])
+    // Nearby neighbors force zoom past the cluster grid so the selected pin is its own marker.
+    expect(focusCall?.location.zoom).toBeGreaterThan(15)
+    expect(instance!.zoom).toBe(focusCall?.location.zoom)
+    // Panel collapse / card measure arrives after select — keep the pin in the free area.
+    instance!.update.mockClear()
+    await wrapper.setProps({ padding: [88, 16, 360, 16] })
+    const afterPanel = instance!.update.mock.calls.at(-1)?.[0]
+    expect(afterPanel?.margin).toEqual([88, 16, 510, 16])
+    expect(afterPanel?.location.center).toEqual([34.2005, 44.5005])
+    expect(afterPanel?.location.zoom).toBe(focusCall?.location.zoom)
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+    instance!.update.mockClear()
+    await wrapper.setProps({ selected: 'one', padding: [100, 24, 48, 500] })
+    const cycled = instance!.update.mock.calls.at(-1)?.[0]
+    expect(cycled?.margin).toEqual([100, 24, 198, 500])
+    expect(cycled?.location.center).toEqual([34.2, 44.5])
+    expect(cycled?.location.zoom).toBeGreaterThan(15)
+    // Map-card ‹› to a distant listing recomputes zoom so the camera can leave the tight cluster.
+    const withDistant = [
+      ...properties,
+      { id: 'far', title: 'Далёкий дом', city: 'Сочи', priceFrom: 3000, location: { lat: 43.6, lon: 39.7 } },
+    ]
+    instance!.update.mockClear()
+    await wrapper.setProps({ properties: withDistant, selected: 'far', padding: [100, 24, 48, 500] })
+    const paged = instance!.update.mock.calls.at(-1)?.[0]?.location
+    expect(paged?.center).toEqual([39.7, 43.6])
+    expect(paged?.zoom).toBeLessThan(cycled!.location.zoom)
+    expect(paged?.zoom).toBeGreaterThanOrEqual(11)
+    await wrapper.setProps({ properties, selected: 'one', padding: [100, 24, 48, 500] })
     instance!.update.mockClear()
     theme.value = 'light'
     await wrapper.vm.$nextTick()
@@ -184,10 +219,17 @@ describe('Yandex Maps integration', () => {
     expect(instance!.update).toHaveBeenCalledWith({ theme: 'light' })
     await wrapper.trigger('pointerdown')
     instance!.update.mockClear()
-    await wrapper.setProps({ padding: [100, 24, 48, 500] })
-    expect(instance!.update).not.toHaveBeenCalledWith(expect.objectContaining({ location: expect.anything() }))
+    await wrapper.setProps({ padding: [100, 24, 48, 120] })
+    // Real pan after focus keeps the camera when only the panel footprint changes.
+    expect(instance!.update).not.toHaveBeenCalled()
+    await wrapper.setProps({ selected: undefined })
+    expect(instance!.update).toHaveBeenCalledWith({ margin: [100, 24, 48, 120] })
+    instance!.update.mockClear()
+    await wrapper.setProps({ padding: [100, 24, 48, 200] })
+    expect(instance!.update).not.toHaveBeenCalled()
     await wrapper.get('.map-show-all').trigger('click')
     expect(instance!.update).toHaveBeenCalledWith(expect.objectContaining({
+      margin: [100, 24, 48, 200],
       location: expect.objectContaining({ center: [34.20025, 44.50025], zoom: expect.any(Number) }),
     }))
     expect(wrapper.get('.map-zoom').classes()).toContain('map-zoom')

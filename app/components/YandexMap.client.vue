@@ -2,7 +2,8 @@
 import { mapLocation, mapViewport, unclusterZoom } from '../utils/map-viewport'
 import { loadYandexApiV2, loadYandexApiV3 } from '../utils/yandex-maps-api'
 const CLUSTER_GRID = 128
-const props = defineProps({ properties: { type: Array, default: () => [] }, selected: { type: String, default: null }, padding: { type: Array, default: () => [60, 30, 150, 30] }, interactive: { type: Boolean, default: true } })
+const FOCUS_MIN_ZOOM = 11
+const props = defineProps({ properties: { type: Array, default: () => [] }, selected: { type: String, default: null }, padding: { type: Array, default: () => [100, 24, 100, 24] }, interactive: { type: Boolean, default: true } })
 const emit = defineEmits(['select'])
 const container = ref(null)
 const config = useRuntimeConfig()
@@ -16,34 +17,40 @@ let clusterModule
 let disposed = false
 let resizeObserver
 let v2Markers = []
-let focusZoom = null
+let focusFrame = 0
 const userMoved = ref(false)
 const viewport = reactive({ width: 1200, height: 800 })
-const cameraPadding = computed(() => {
-  // Intro frames the full viewport; search reserves the measured panel footprint.
-  if (!props.interactive) return [64, 40, 80, 40]
-  const padding = [...props.padding]
-  if (props.selected) padding[2] = Math.max(0, Math.min(viewport.height - padding[0] - 120, padding[2] + 150))
+// Intro stays full-bleed. Search fit/focus use the free area beside the panel (card boost only when focused).
+const cameraPadding = [64, 40, 80, 40]
+const overviewPadding = computed(() => props.interactive ? [...props.padding] : cameraPadding)
+const focusPadding = computed(() => {
+  const padding = [...overviewPadding.value]
+  padding[2] = Math.max(0, Math.min(viewport.height - padding[0] - 120, padding[2] + 150))
   return padding
 })
 function resultsLocation() {
-  return mapLocation(props.properties, viewport.width, viewport.height, cameraPadding.value)
+  return mapLocation(props.properties, viewport.width, viewport.height, overviewPadding.value)
 }
 const clusterIds = ref([])
 const clusterProperties = computed(() => props.properties.filter(property => clusterIds.value.includes(property.id)))
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
-function selectProperty(id) { clusterIds.value = []; focusZoom = null; emit('select', id) }
+function selectProperty(id) { clusterIds.value = []; emit('select', id) }
 function selectClusterProperty(id) {
-  const members = clusterProperties.value
-  const property = members.find(item => item.id === id)
-  const mates = members.filter(item => item.id !== id).map(item => item.location)
-  const currentZoom = engine.value === 'v3' ? map?.zoom : engine.value === 'v2' ? map?.getZoom?.() : 0
-  focusZoom = property
-    ? Math.max(currentZoom ?? 0, unclusterZoom(property.location, mates, CLUSTER_GRID))
-    : null
   clusterIds.value = []
   emit('select', id)
-  if (props.selected === id) focusSelected()
+  // Same id does not retrigger the selected watcher; still reclaim the free-area frame.
+  if (props.selected === id) scheduleFocusSelected()
+}
+function currentZoom() {
+  return engine.value === 'v3' ? map?.zoom : engine.value === 'v2' ? map?.getZoom?.() : 0
+}
+/** Zoom high enough that the pin is its own marker, never stuck inside a price cluster. */
+function focusZoomFor(property, keepZoom = false) {
+  const mates = props.properties.filter(item => item.id !== property.id).map(item => item.location)
+  const needed = Math.max(FOCUS_MIN_ZOOM, unclusterZoom(property.location, mates, CLUSTER_GRID))
+  // Selection changes (marker / cluster list / map-card ‹›) recompute zoom so paging can zoom out.
+  // Panel measure and resize only keep the pin framed without stealing a deeper zoom.
+  return keepZoom ? Math.max(currentZoom() ?? 0, needed) : needed
 }
 function makeButton(label, title, className, onClick) {
   const button = document.createElement('button')
@@ -81,7 +88,7 @@ function syncMarkersV3(fit = false) {
   }
   clusterer = new clusterModule.YMapClusterer({ method: clusterModule.clusterByGrid({ gridSize: CLUSTER_GRID }), features, marker, cluster })
   map.addChild(clusterer)
-  if (fit) fitResults()
+  if (fit) fitOrFocus()
 }
 function syncMarkersV2(fit = false) {
   if (!map || !window.ymaps || !clusterer) return
@@ -97,12 +104,16 @@ function syncMarkersV2(fit = false) {
     return marker
   })
   clusterer.add(v2Markers)
-  if (fit) fitResults()
+  if (fit) fitOrFocus()
+}
+function fitOrFocus() {
+  if (props.selected) focusSelected()
+  else fitResults()
 }
 function fitResults() {
   if (!map || !props.properties.length) return
   if (engine.value === 'v3') {
-    map.update({ margin: cameraPadding.value, location: resultsLocation() })
+    map.update({ margin: overviewPadding.value, location: resultsLocation() })
     return
   }
   if (engine.value === 'v2') {
@@ -111,15 +122,49 @@ function fitResults() {
   }
 }
 function initialCamera() {
-  return mapViewport(props.properties, viewport.width, viewport.height, cameraPadding.value)
+  return mapViewport(props.properties, viewport.width, viewport.height, overviewPadding.value)
 }
-function focusSelected() {
+function focusSelected(keepZoom = false) {
   const property = props.properties.find(item => item.id === props.selected)
   if (!map || !property) return
-  const zoom = focusZoom ?? (engine.value === 'v3' ? map.zoom : map.getZoom())
-  focusZoom = null
-  if (engine.value === 'v3') map.update({ margin: cameraPadding.value, location: { center: [property.location.lon, property.location.lat], zoom } })
-  else if (engine.value === 'v2') map.setCenter([property.location.lat, property.location.lon], zoom, { checkZoomRange: true })
+  // Uncluster from every neighbor; free-area framing is margin (v3) or a same-zoom shift (v2 / widget).
+  // Do not combine both — double offset pushed pins too far right on desktop and too high on mobile.
+  const zoom = focusZoomFor(property, keepZoom)
+  if (engine.value === 'v3') {
+    map.update({
+      margin: focusPadding.value,
+      location: { center: [property.location.lon, property.location.lat], zoom },
+    })
+    return
+  }
+  if (engine.value === 'v2') {
+    const camera = mapViewport([property], viewport.width, viewport.height, focusPadding.value, zoom)
+    map.setCenter([camera.lat, camera.lon], zoom, { checkZoomRange: true })
+  }
+}
+function cancelScheduledFocus() {
+  if (typeof cancelAnimationFrame === 'undefined') return
+  cancelAnimationFrame(focusFrame)
+  focusFrame = 0
+}
+// Marker clicks set userMoved via the map pointer target before select lands; reclaim the camera, then
+// re-focus after SearchMapLayout measures the collapsed panel / preview card.
+function scheduleFocusSelected() {
+  userMoved.value = false
+  focusSelected()
+  cancelScheduledFocus()
+  nextTick(() => {
+    focusFrame = requestAnimationFrame(() => {
+      focusFrame = requestAnimationFrame(() => {
+        focusFrame = 0
+        if (!disposed && props.selected && !userMoved.value) focusSelected(true)
+      })
+    })
+  })
+}
+function clearFocusMargin() {
+  cancelScheduledFocus()
+  if (engine.value === 'v3' && map) map.update({ margin: overviewPadding.value })
 }
 function showAll() {
   userMoved.value = false
@@ -141,8 +186,7 @@ function observeResize() {
   resizeObserver = new ResizeObserver(entries => {
     if (!entries[0]?.contentRect.width || !entries[0]?.contentRect.height || userMoved.value) return
     if (engine.value === 'v2') map?.container.fitToViewport()
-    // No fitResults here: intro→search and panel resize must not jump the camera.
-    if (props.selected) focusSelected()
+    if (props.selected) focusSelected(true)
   })
   resizeObserver.observe(container.value)
 }
@@ -151,7 +195,7 @@ async function mountV3(key) {
   if (disposed) return
   api = loaded.api
   clusterModule = loaded.cluster
-  map = new api.YMap(container.value, { location: resultsLocation(), margin: cameraPadding.value, theme: theme.value }, [
+  map = new api.YMap(container.value, { location: resultsLocation(), margin: cameraPadding, theme: theme.value }, [
     new api.YMapDefaultSchemeLayer(), new api.YMapDefaultFeaturesLayer(),
   ])
   map.addChild(new api.YMapListener({ onClick: object => { if (object?.type === 'marker') return; clusterIds.value = []; emit('select', null) } }))
@@ -203,19 +247,28 @@ onMounted(async () => {
   }
 })
 watch(() => props.properties, () => { userMoved.value = false; syncMarkers(true) }, { deep: true })
-watch(() => props.selected, () => { syncMarkers(false); focusSelected() })
-watch(cameraPadding, () => {
-  if (!map) return
-  // Margin only: refitting here shifts the intro camera when the search panel appears.
-  if (engine.value === 'v3') map.update({ margin: cameraPadding.value })
-  if (!userMoved.value && props.selected) focusSelected()
+watch(() => props.selected, () => {
+  syncMarkers(false)
+  if (props.selected) scheduleFocusSelected()
+  else clearFocusMargin()
+})
+watch(focusPadding, () => {
+  // Panel resize may update focus margins, but never reframe the unselected overview.
+  if (props.selected && !userMoved.value) focusSelected(true)
 }, { deep: true })
 watch(theme, value => {
   if (engine.value !== 'v3' || !map) return
   // Let the shell class paint first; map tiles can catch up on the next frame.
   requestAnimationFrame(() => { if (!disposed && map) map.update({ theme: value }) })
 })
-const widgetCamera = computed(() => mapViewport(props.selected ? props.properties.filter(item => item.id === props.selected) : props.properties, viewport.width, viewport.height, cameraPadding.value))
+const widgetCamera = computed(() => {
+  const focused = props.selected ? props.properties.filter(item => item.id === props.selected) : props.properties
+  if (!props.selected || !focused[0]) {
+    return mapViewport(focused, viewport.width, viewport.height, overviewPadding.value)
+  }
+  const zoom = focusZoomFor(focused[0])
+  return mapViewport(focused, viewport.width, viewport.height, focusPadding.value, zoom)
+})
 const widgetUrl = computed(() => {
   const { lon, lat, zoom } = widgetCamera.value
   const params = new URLSearchParams({ ll: `${lon},${lat}`, z: String(zoom) })
@@ -225,6 +278,7 @@ const widgetUrl = computed(() => {
 })
 onBeforeUnmount(() => {
   disposed = true
+  cancelScheduledFocus()
   window.removeEventListener('resize', measureViewport)
   resizeObserver?.disconnect()
   if (engine.value === 'v3') map?.destroy?.()

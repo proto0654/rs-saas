@@ -9,6 +9,7 @@ const KEY = 'rs-saas-demo'
 const LEGACY_BACKUP_KEY = `${KEY}:v1-backup`
 const DEFAULTS_BACKUP_KEY = `${KEY}:defaults-backup`
 const CATALOG_BACKUP_KEY = `${KEY}:catalog-backup`
+const PHOTOS_BACKUP_KEY = `${KEY}:photos-backup`
 const fresh = () => ({ catalogVersion: demoCatalogVersion, db: structuredClone(seed), favorites: [...seed.favorites], filters: structuredClone(seed.defaultSearch), role: 'guest', personalBot: null, audit: [] })
 export const useDemoStore = defineStore('demo', {
   state: () => ({ ready: false, data: /** @type {import('../../shared/types/demo').DemoState | null} */ (null), storageWarning: false, restoreWarning: false, scenario: 'normal', selectedPropertyId: /** @type {string | null} */ (null), mapMode: true }),
@@ -23,7 +24,8 @@ export const useDemoStore = defineStore('demo', {
           if (validDemoState(saved)) {
             data = { ...saved, personalBot: saved.personalBot ?? null, audit: saved.audit ?? [] }
             if (previous?.db?.schemaVersion === 1 && !localStorage.getItem(LEGACY_BACKUP_KEY)) localStorage.setItem(LEGACY_BACKUP_KEY, raw)
-            if (saved?.catalogVersion === demoCatalogVersion && previous?.catalogVersion == null && !localStorage.getItem(CATALOG_BACKUP_KEY)) localStorage.setItem(CATALOG_BACKUP_KEY, raw)
+            if (saved?.catalogVersion >= 1 && previous?.catalogVersion == null && !localStorage.getItem(CATALOG_BACKUP_KEY)) localStorage.setItem(CATALOG_BACKUP_KEY, raw)
+            if (saved?.catalogVersion === demoCatalogVersion && (previous?.catalogVersion == null || previous.catalogVersion === 1) && !localStorage.getItem(PHOTOS_BACKUP_KEY)) localStorage.setItem(PHOTOS_BACKUP_KEY, raw)
             if (JSON.stringify(saved.db.defaultSearch) !== JSON.stringify(previous.db.defaultSearch) && previous?.db?.schemaVersion !== 1 && !localStorage.getItem(DEFAULTS_BACKUP_KEY)) localStorage.setItem(DEFAULTS_BACKUP_KEY, raw)
           } else this.restoreWarning = true
         }
@@ -35,7 +37,7 @@ export const useDemoStore = defineStore('demo', {
       if (!this.ready) return
       try { localStorage.setItem(KEY, JSON.stringify(this.data)) } catch { this.storageWarning = true }
     },
-    reset() { this.data = fresh(); this.restoreWarning = false; this.storageWarning = false; this.scenario = 'normal'; this.selectedPropertyId = null; this.mapMode = true; try { localStorage.removeItem(KEY); localStorage.removeItem(LEGACY_BACKUP_KEY); localStorage.removeItem(DEFAULTS_BACKUP_KEY); localStorage.removeItem(CATALOG_BACKUP_KEY) } catch { this.storageWarning = true } },
+    reset() { this.data = fresh(); this.restoreWarning = false; this.storageWarning = false; this.scenario = 'normal'; this.selectedPropertyId = null; this.mapMode = true; try { localStorage.removeItem(KEY); localStorage.removeItem(LEGACY_BACKUP_KEY); localStorage.removeItem(DEFAULTS_BACKUP_KEY); localStorage.removeItem(CATALOG_BACKUP_KEY); localStorage.removeItem(PHOTOS_BACKUP_KEY) } catch { this.storageWarning = true } },
     toggleFavorite(id) { const list = this.data.favorites; this.data.favorites = list.includes(id) ? list.filter(x => x !== id) : [...list, id]; this.save() },
     setFilters(filters) { if (!validFilters(filters)) throw new Error('Проверьте параметры поиска'); this.data.filters = structuredClone(JSON.parse(JSON.stringify(filters))); this.save() },
     setClock(value) { day(value); this.data.db.demoToday = value; this.save() },
