@@ -1,5 +1,5 @@
 import { flushPromises } from '@vue/test-utils'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import MestoApp from '../../app/components/MestoApp.vue'
 import { useDemoStore } from '../../app/stores/demo.js'
@@ -12,6 +12,29 @@ describe('guest search filters', () => {
     expect(wrapper.findAll('.property-card').length).toBeGreaterThan(20)
     expect(wrapper.text()).toContain('Цена')
     await flushPromises()
+    wrapper.unmount()
+  })
+  it('selects a listing from the sidebar without navigating to the stay page', async () => {
+    localStorage.clear()
+    const wrapper = await mountSuspended(MestoApp, { route: '/search', global: { stubs: { YandexMap: true } } })
+    const store = useDemoStore(); store.$reset(); store.restore(); await nextTick()
+    await wrapper.findAll('button').find(button => button.text().includes('Список'))!.trigger('click')
+    await flushPromises()
+    expect(store.mapMode).toBe(false)
+    const card = wrapper.get('.property-card')
+    await card.trigger('click')
+    await nextTick()
+    expect(store.selectedPropertyId).toBeTruthy()
+    expect(store.mapMode).toBe(false)
+    expect(wrapper.find('.map-card').exists()).toBe(true)
+    expect(wrapper.find('.property-card.selected').exists()).toBe(true)
+    expect(wrapper.find('.detail-page').exists()).toBe(false)
+    const navigate = vi.spyOn(wrapper.vm.$router, 'push')
+    const selectedId = store.selectedPropertyId
+    await wrapper.get('.property-card.selected .card-go').trigger('click')
+    await flushPromises()
+    expect(navigate).toHaveBeenCalledWith(expect.objectContaining({ path: `/stays/${selectedId}` }))
+    navigate.mockRestore()
     wrapper.unmount()
   })
   it('dismisses the map card and restores it when another marker is selected', async () => {

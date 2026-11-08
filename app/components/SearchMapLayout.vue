@@ -55,10 +55,10 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
 .search-map-layer[inert]{pointer-events:none}
 .search-map-layer :deep(.map){position:absolute;inset:0;height:100%;min-height:0;border:0;border-radius:0}
 @media(prefers-reduced-motion:reduce){.search-map-layer{transition:none}}
-.search-map-layer :deep(.map-card){left:auto;right:24px;bottom:48px;width:min(440px,calc(100vw - var(--map-left) - 48px))}
+.search-map-layer :deep(.map-card),
+.search-map-layer :deep(.map-cluster-list){left:auto;right:24px;bottom:48px;width:min(440px,calc(100vw - var(--map-left) - 48px))}
 .search-map-layer :deep(.map-empty){left:calc(var(--map-left) + (100% - var(--map-left) - var(--map-right))/2);top:calc(var(--map-top) + (100% - var(--map-top) - var(--map-bottom))/2)}
 .search-map-layer :deep(.map-provider-hint){top:var(--map-top);left:var(--map-left);max-width:calc(100% - var(--map-left) - var(--map-right))}
-.search-map-layer :deep(.map-cluster-list){left:var(--map-left);right:var(--map-right);bottom:var(--map-bottom)}
 .search-panel :deep(.search-heading){display:flex;margin:0 0 18px}
 .search-panel :deep(.search-heading h1){font-size:36px}
 .search-panel :deep(.search-heading p){font-size:13px}
@@ -71,9 +71,10 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
 .search-panel :deep(.results-heading>div:first-child){display:block}
 .search-panel :deep(.view-switch){width:auto;flex:none}
 .search-panel :deep(.results-layout){display:block}
-.search-panel :deep(.property-card){grid-template-columns:38% 62%;min-height:190px}
-.search-panel :deep(.card-content){padding:12px}
-.search-panel :deep(.card-content h3){font-size:17px}
+.search-panel :deep(.property-card){grid-template-columns:96px minmax(0,1fr)}
+.search-panel :deep(.card-content){padding:6px 28px 6px 10px}
+.search-panel :deep(.card-content h3){font-size:14px}
+.search-panel :deep(.card-price b){font-size:13px}
 .search-panel :deep(.filter-fields){grid-template-columns:1fr}
 .search-panel :deep(.filter-fields .check-list){grid-template-columns:repeat(2,minmax(0,1fr))}
 .search-panel :deep(.filter-actions){bottom:0;background:var(--surface-card)}
@@ -85,8 +86,12 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
   .search-panel-handle>span{width:36px;height:4px;border-radius:4px;background:#647260}
   .search-panel :deep(.search-heading h1){font-size:28px;margin:6px 0}
   .search-panel :deep(.search-heading p){display:none}
-  .search-map-layer :deep(.map-card){left:10px;right:10px;bottom:var(--map-bottom);width:auto;padding:10px}
-  .search-map-layer :deep(.map-card img){width:64px;height:72px}
-  .search-map-layer :deep(.map-card strong){font-size:14px}
+  .search-map-layer :deep(.map-card),
+  .search-map-layer :deep(.map-cluster-list){left:10px;right:10px;bottom:var(--map-bottom);width:auto}
+  .search-map-layer :deep(.map-card){padding:6px 32px 6px 6px}
+  .search-map-layer :deep(.map-card img),
+  .search-map-layer :deep(.map-cluster-item img){width:72px;height:72px}
+  .search-map-layer :deep(.map-card strong),
+  .search-map-layer :deep(.map-cluster-item strong){font-size:13px}
 }
 </style>

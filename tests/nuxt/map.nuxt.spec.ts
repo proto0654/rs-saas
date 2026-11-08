@@ -169,11 +169,16 @@ describe('Yandex Maps integration', () => {
     expect(marker.element.getAttribute('aria-label')).toBe(properties[0]!.title)
     expect(marker.element.querySelector('img')).toBeNull()
     const cluster = currentCluster!.options.cluster([34.2, 44.5], currentCluster!.options.features) as FakeMarker
+    expect(cluster.element.textContent).toBe('2 объекта')
+    expect(cluster.element.getAttribute('aria-label')).toBe('2 объекта')
     cluster.element.click()
     await wrapper.vm.$nextTick()
+    expect(wrapper.emitted('select')?.[0]).toEqual([null])
+    expect(wrapper.get('.map-cluster-list').text()).toContain('2 объекта рядом')
     expect(wrapper.get('.map-cluster-list').text()).toContain('Другая квартира')
+    expect(wrapper.get('.map-cluster-item img').attributes('src')).toBeTruthy()
     await wrapper.findAll('.map-cluster-item')[1]!.trigger('click')
-    expect(wrapper.emitted('select')?.[0]).toEqual(['two'])
+    expect(wrapper.emitted('select')?.[1]).toEqual(['two'])
     instance!.zoom = 9
     instance!.update.mockClear()
     // Marker pointerdown would otherwise lock the camera before select; selection must reclaim it.

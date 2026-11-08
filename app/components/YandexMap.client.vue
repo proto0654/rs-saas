@@ -31,9 +31,15 @@ const focusPadding = computed(() => {
 function resultsLocation() {
   return mapLocation(props.properties, viewport.width, viewport.height, overviewPadding.value)
 }
+const typeLabels = { apartment: 'Квартира', hotel: 'Мини-отель', hostel: 'Хостел', house: 'Дом' }
 const clusterIds = ref([])
 const clusterProperties = computed(() => props.properties.filter(property => clusterIds.value.includes(property.id)))
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
+function openCluster(ids) {
+  // Clear the single-listing card so the cluster sheet owns the same popup slot.
+  emit('select', null)
+  clusterIds.value = ids
+}
 function selectProperty(id) { clusterIds.value = []; emit('select', id) }
 function selectClusterProperty(id) {
   clusterIds.value = []
@@ -65,6 +71,10 @@ function makeButton(label, title, className, onClick) {
 function priceLabel(property) {
   return `${new Intl.NumberFormat('ru-RU').format(property.priceFrom)} ₽${property.rentalMode === 'long_term' ? '/мес' : ''}`
 }
+function clusterLabel(count) {
+  const noun = { one: 'объект', few: 'объекта', many: 'объектов', other: 'объекта' }[new Intl.PluralRules('ru').select(count)]
+  return `${count} ${noun}`
+}
 function syncMarkers(fit = false) {
   if (engine.value === 'v3') syncMarkersV3(fit)
   else if (engine.value === 'v2') syncMarkersV2(fit)
@@ -83,7 +93,8 @@ function syncMarkersV3(fit = false) {
     return new api.YMapMarker({ coordinates: feature.geometry.coordinates }, button)
   }
   const cluster = (coordinates, items) => {
-    const button = makeButton(String(items.length), `Объекты рядом: ${items.length}`, 'map-cluster-marker', () => { clusterIds.value = items.map(item => item.id) })
+    const label = clusterLabel(items.length)
+    const button = makeButton(label, label, 'map-cluster-marker', () => openCluster(items.map(item => item.id)))
     return new api.YMapMarker({ coordinates }, button)
   }
   clusterer = new clusterModule.YMapClusterer({ method: clusterModule.clusterByGrid({ gridSize: CLUSTER_GRID }), features, marker, cluster })
@@ -214,7 +225,7 @@ async function mountV2(key) {
     const target = event.get('target')
     if (typeof target?.getGeoObjects !== 'function') return
     event.preventDefault(); event.stopPropagation()
-    clusterIds.value = target.getGeoObjects().map(marker => marker.properties.get('propertyId'))
+    openCluster(target.getGeoObjects().map(marker => marker.properties.get('propertyId')))
   })
   map.geoObjects.add(clusterer)
   map.events.add('click', () => { clusterIds.value = []; emit('select', null) })
@@ -297,8 +308,16 @@ onBeforeUnmount(() => {
       <button type="button" aria-label="Отдалить" @click.stop="adjustZoom(-1)">−</button>
     </div>
     <section v-if="clusterProperties.length" class="map-cluster-list" aria-label="Объекты на карте">
-      <div class="map-cluster-heading"><b>Объекты рядом · {{ clusterProperties.length }}</b><button aria-label="Закрыть список объектов" @click="clusterIds = []">×</button></div>
-      <button v-for="property in clusterProperties" :key="property.id" class="map-cluster-item" @click="selectClusterProperty(property.id)"><span>{{ property.title }}<small>{{ property.city }}</small></span><b>{{ new Intl.NumberFormat('ru-RU').format(property.priceFrom) }} ₽<small>{{ property.rentalMode === 'long_term' ? '/мес' : '/ночь' }}</small></b></button>
+      <div class="map-cluster-heading"><b>{{ clusterLabel(clusterProperties.length) }} рядом</b><button type="button" class="map-card-close" aria-label="Закрыть список объектов" @click="clusterIds = []">×</button></div>
+      <button v-for="property in clusterProperties" :key="property.id" type="button" class="map-cluster-item" @click="selectClusterProperty(property.id)">
+        <img :src="property.images?.[0] || '/demo/p1.svg'" :alt="property.title">
+        <div>
+          <strong>{{ property.title }}</strong>
+          <small>{{ property.city }} · {{ typeLabels[property.type] || property.type }}</small>
+          <span>★ {{ property.rating }} <i v-if="property.videoVerified"> · Видео проверено</i></span>
+          <b>{{ new Intl.NumberFormat('ru-RU').format(property.priceFrom) }} ₽ <small>/ {{ property.rentalMode === 'long_term' ? 'месяц' : 'ночь' }}</small></b>
+        </div>
+      </button>
     </section>
   </div>
 </template>
@@ -308,10 +327,20 @@ onBeforeUnmount(() => {
 .map-zoom button{width:44px;height:44px;border:0;background:transparent;color:var(--text-main);font-size:22px;line-height:1}
 .map-zoom button+button{border-top:1px solid var(--border-main)}
 .map-zoom button:hover{background:var(--surface-control)}
-.map-cluster-list{position:absolute;z-index:6;inset:auto 12px 25px;background:var(--surface-glass);border:1px solid var(--border-main);border-radius:16px;padding:12px;max-height:min(320px,70%);overflow:auto;color:var(--text-main)}.map-cluster-heading,.map-cluster-item{display:flex;align-items:center;justify-content:space-between;gap:12px}.map-cluster-heading button{border:0;background:transparent;color:inherit;font-size:24px;width:44px;height:44px}.map-cluster-item{width:100%;min-height:54px;padding:8px 4px;border:0;border-top:1px solid var(--border-main);background:transparent;color:inherit;text-align:left}.map-cluster-item span{min-width:0}.map-cluster-item b{text-align:right;white-space:nowrap}.map-cluster-item small{display:block;color:var(--text-muted);font-size:11px}
+.map-cluster-list{position:absolute;z-index:6;inset:auto 12px 25px;display:grid;gap:10px;background:var(--surface-glass);border:1px solid var(--border-main);border-radius:16px;padding:10px;max-height:min(360px,70%);overflow:auto;color:var(--text-main)}
+.map-cluster-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 2px}
+.map-cluster-heading .map-card-close{width:44px;height:44px;flex:none;border:0;border-radius:50%;background:transparent;color:inherit;font-size:24px;line-height:1}
+.map-cluster-heading .map-card-close:hover{background:var(--surface-control)}
+.map-cluster-item{display:flex;gap:13px;align-items:center;width:100%;padding:0;border:0;border-radius:12px;background:transparent;color:inherit;text-align:left;cursor:pointer}
+.map-cluster-item img{width:100px;height:90px;object-fit:cover;border-radius:10px;flex-shrink:0}
+.map-cluster-item>div{display:grid;gap:4px;flex:1;min-width:0}
+.map-cluster-item strong{overflow-wrap:anywhere}
+.map-cluster-item small,.map-cluster-item span{font-size:12px;color:var(--text-muted)}
+.map-cluster-item i{color:var(--accent-text);font-style:normal}
+.map-cluster-item>div>b{white-space:nowrap}
 
 :deep(.map-price-marker),:deep(.map-cluster-marker){border:1px solid var(--map-marker-border,#fff);background:var(--map-marker-bg,#142019);color:var(--map-marker-fg,#fff);font-size:12px;font-weight:800;box-shadow:0 3px 12px var(--map-marker-shadow,#0006);cursor:pointer}
 :deep(.map-price-marker){border-radius:30px;padding:8px 12px;white-space:nowrap}
 :deep(.map-price-marker.is-selected){background:#d0f35b;color:#10170c;border-color:#d0f35b}
-:deep(.map-cluster-marker){border-radius:50%;min-width:44px;min-height:44px}
+:deep(.map-cluster-marker){border-radius:30px;padding:8px 12px;white-space:nowrap;min-height:44px}
 </style>
