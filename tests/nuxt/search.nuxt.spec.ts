@@ -236,5 +236,26 @@ describe('guest search filters', () => {
     await flushPromises()
     wrapper.unmount()
   })
+  it('returns from a stay to search with the listing focused on the map', async () => {
+    localStorage.clear()
+    const stay = await mountSuspended(MestoApp, { route: '/stays/p1', global: { stubs: { YandexMap: true } } })
+    const store = useDemoStore(); store.$reset(); store.restore(); await nextTick()
+    store.mapMode = false
+    store.selectedPropertyId = null
+    const navigate = vi.spyOn(stay.vm.$router, 'push')
+    await stay.get('[aria-label="Назад к поиску"]').trigger('click')
+    await flushPromises()
+    expect(store.selectedPropertyId).toBe('p1')
+    expect(store.mapMode).toBe(true)
+    expect(navigate).toHaveBeenCalledWith(expect.objectContaining({ path: '/search' }))
+    navigate.mockRestore()
+    stay.unmount()
+    const search = await mountSuspended(MestoApp, { route: '/search', global: { stubs: { YandexMap: true } } })
+    expect(search.find('.map-card').exists()).toBe(true)
+    expect(search.get('.map-card').attributes('aria-label')).toBeTruthy()
+    expect(store.selectedPropertyId).toBe('p1')
+    await flushPromises()
+    search.unmount()
+  })
 
 })
