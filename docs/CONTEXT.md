@@ -8,7 +8,7 @@ The primary project language is English for new documentation and code, while ex
 
 Routes are explicit Nuxt pages. Guest, host and Telegram layouts share [AppShell](../app/components/AppShell.vue) and [platform navigation](../app/composables/usePlatform.ts); [MestoApp](../app/components/MestoApp.vue) composes the shared screens. Transient map selection and demo network scenarios live in the request-scoped Pinia store and survive client navigation; only the demo data namespace is persisted to browser storage.
 
-The landing-page animation is implemented by [HomeIntro](../app/components/HomeIntro.vue). Owner inventory views share the [calendar](../app/components/HostCalendar.vue) and [booking groups](../app/components/HostBookings.vue); see the [showcase walkthrough](DEMO.md) for their behavior.
+The landing-page animation is implemented by [HomeIntro](../app/components/HomeIntro.vue). Guest search uses [SearchMapLayout](../app/components/SearchMapLayout.vue) for a persistent full-viewport map with measured overlay panels; its behavior and keyless-widget limitations are described in the [showcase walkthrough](DEMO.md). Owner inventory views share the [calendar](../app/components/HostCalendar.vue) and [booking groups](../app/components/HostBookings.vue).
 
 The public product name comes from [brand configuration](../shared/brand.ts). Legacy component and theme identifiers remain internal; the browser-storage namespace stays unchanged to preserve demo data.
 

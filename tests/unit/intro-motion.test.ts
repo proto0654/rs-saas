@@ -71,6 +71,7 @@ describe('intro geometry against measured reference frames', () => {
     expect(introMotion(.75, 911, 620).contentOpacity).toBe(0)
     expect(introMotion(.9, 911, 620).contentOpacity).toBeGreaterThan(0)
     expect(introMotion(.9, 911, 620).contentOpacity).toBeLessThan(1)
+    expect(introMotion(.995, 911, 620).contentOpacity).toBe(1)
     expect(introMotion(1, 911, 620).contentOpacity).toBe(1)
   })
   it('matches row delays and flight distance at 360px of 1860px scroll', () => {

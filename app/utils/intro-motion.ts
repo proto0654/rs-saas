@@ -33,6 +33,7 @@ export function introMotion(progress: number, width: number, height: number) {
     }
     return { transform: `translate3d(${x}px, ${y}px, 0)`, visibility: progress <= 0 ? 'hidden' as const : 'visible' as const }
   })
-  const contentOpacity = cubicInOut(clamp((time - 1.26) / .32))
+  const fade = cubicInOut(clamp((time - 1.26) / .32))
+  const contentOpacity = fade >= .99 ? 1 : fade
   return { scale, tiles, contentOpacity, geometry }
 }

@@ -9,8 +9,10 @@ const reducedMotion = ref(false)
 const photos = seed.properties.filter(property => property.status === 'published' && property.images?.[0])
 const images = ref(photos.slice(0, 12).map(property => property.images[0]))
 const stage = ref(null)
+const mapLayer = ref(null)
 const viewport = reactive({ width: 1200, height: 800 })
 const motion = computed(() => introMotion(progress.value, viewport.width, viewport.height))
+provide('homeIntroMap', { layer: mapLayer, progress, contentOpacity: computed(() => motion.value.contentOpacity), reducedMotion })
 const gridStyle = computed(() => ({
   width: `${motion.value.geometry.gridWidth}px`,
   '--intro-tile-height': `${motion.value.geometry.tileHeight}px`,
@@ -31,12 +33,17 @@ function updateProgress() {
   viewport.height = stage.value.clientHeight
   const distance = section.value.offsetHeight - viewport.height
   targetProgress = distance > 0 ? Math.max(0, Math.min(1, -section.value.getBoundingClientRect().top / distance)) : 1
+  // Mobile browser chrome can stop a few pixels short of the calculated end; treat that as finished.
+  if (distance > 0 && targetProgress >= .97) {
+    targetProgress = 1
+    progress.value = 1
+  }
 }
 function animate(time) {
   const delta = lastFrame ? Math.min(64, time - lastFrame) : 16
   lastFrame = time
   progress.value += (targetProgress - progress.value) * (1 - Math.exp(-delta / 80))
-  if (Math.abs(targetProgress - progress.value) < .00001) {
+  if (Math.abs(targetProgress - progress.value) < .002) {
     progress.value = targetProgress
     frame = 0
     lastFrame = 0
@@ -87,6 +94,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="home-reveal" :style="{ '--content-opacity': motion.contentOpacity }">
+  <div ref="mapLayer" class="intro-map-layer"></div>
   <div class="home-search-track">
     <div class="home-search">
       <header class="intro-heading">
@@ -96,11 +104,11 @@ onBeforeUnmount(() => {
         </div>
         <a class="intro-scroll" href="#search"><span>ЛИСТАЙТЕ ВНИЗ</span><span class="intro-scroll-line" aria-hidden="true"></span><span class="intro-search-link">Перейти к поиску ↓</span></a>
       </header>
-      <div class="search-content" :inert="!reducedMotion && motion.contentOpacity < 1 || undefined"><slot /></div>
+      <div class="search-content" :inert="!reducedMotion && motion.contentOpacity < .99 || undefined"><slot /></div>
     </div>
     <div class="home-search-runway" aria-hidden="true"></div>
   </div>
-  <section ref="section" class="home-intro" :inert="motion.contentOpacity >= 1 || undefined" :aria-hidden="motion.contentOpacity >= 1 || undefined" aria-label="Локаль — жильё для поездок и жизни">
+  <section ref="section" class="home-intro" :inert="motion.contentOpacity >= .99 || undefined" :aria-hidden="motion.contentOpacity >= .99 || undefined" aria-label="Локаль — жильё для поездок и жизни">
     <span id="search" class="search-anchor" aria-hidden="true"></span>
     <div ref="stage" class="intro-stage">
       <div class="intro-grid-frame" :style="gridStyle" aria-hidden="true"><div class="intro-tiles" :style="{ transform: `scale(${motion.scale})` }">
@@ -113,17 +121,18 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.home-reveal{display:grid}
+.home-reveal{display:grid;position:relative}
+.intro-map-layer{position:fixed;inset:0;z-index:0;pointer-events:none}
 .home-search-track,.home-intro{grid-area:1/1}
 .home-search-track{min-width:0}
-.home-search-runway{height:300svh}
+.home-search-runway{height:300svh;pointer-events:none}
 .home-search{position:sticky;top:0;min-height:100svh;z-index:2;pointer-events:none}
-.intro-heading{position:relative;z-index:2;height:100svh;display:grid;place-items:center;color:#f5f4eb;pointer-events:none}
-.search-content{opacity:var(--content-opacity);pointer-events:auto}
+.intro-heading{position:relative;z-index:2;height:100svh;display:grid;place-items:center;color:#f5f4eb;pointer-events:none;opacity:calc(1 - var(--content-opacity))}
+.search-content{position:fixed;inset:0;opacity:var(--content-opacity);pointer-events:none}
 .home-intro{position:relative;height:400svh;color:#f5f4eb;z-index:1;pointer-events:none}
-.search-anchor{position:absolute;top:400svh;left:0}
+.search-anchor{position:absolute;top:300svh;left:0}
 .intro-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;isolation:isolate}
-.intro-stage::before{content:'';position:absolute;inset:0;background:#080c0a;opacity:calc(1 - var(--content-opacity));z-index:-1}
+.intro-stage::before{content:'';position:absolute;inset:0;background:#080c0a;opacity:calc(.58 * (1 - var(--content-opacity)));z-index:-1}
 .intro-grid-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
 .intro-tiles{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,var(--intro-tile-height));gap:var(--intro-row-gap) var(--intro-column-gap);will-change:transform}
 .intro-tile{min-width:0;min-height:0;overflow:hidden;will-change:transform,opacity}

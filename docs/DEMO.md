@@ -4,6 +4,10 @@ All listings, people, bookings, prices and images are fictional. Use the profile
 
 ## Catalog coverage
 
+Guest search keeps one full-viewport map behind a floating search/results panel: a bottom panel on mobile and a left sidebar on desktop. The panel handle and Map/List buttons collapse or expand results; filters expand the panel while editing. Selecting a marker collapses results and opens its preview card. Map fitting reserves the measured panel footprint, navigation and preview space. Manual panning is retained when panels resize; “Показать все объекты” explicitly fits results again. Changing search results fits the new set.
+
+On the landing page the same map stays mounted throughout the intro. It starts desaturated, dimmed and inert, then reveals with the search controls. Reaching the end of the intro scroll unlocks search immediately (including a small mobile chrome tolerance); the scroll runway never intercepts clicks. Reduced motion opens search directly. Clearing restrictions is also available from a round reset control beside “Все фильтры”, without opening the filter panel. The keyless Yandex iframe uses a calculated initial camera to reserve panel space and fit results and displays the current listing coordinates as markers. Marker selection, prices and the fit-all action require a valid API key; open listing details from the results list in the fallback. The iframe cannot expose its manually changed camera to the app, so changes to search, selection or panel geometry reload its calculated view.
+
 The seed contains 60 properties in 27 cities across Crimea, Kuban and southern Russia: 40 apartments (12 monthly rentals), 9 hostels, 9 hotels and 2 houses. There are 112 physical units, 47 bookings, two saved favorites and one maintenance block. The first owner has 21 properties, including the original draft studio. City coordinates are approximate and are not navigation advice. Images repeat across fictional listings.
 
 New searches start without a budget, sea view, city, region, property type or video restriction. Dates, guest count and rental mode remain the basic search parameters. Previously saved custom filters and explicit URL filters are retained. City entry pages apply their city; explicit filters can return no matches in inland cities.
@@ -22,7 +26,7 @@ Destination, dates/guests and restrictions open as inline panels, one at a time.
 | Guest booking states | Guest bookings include checked-in `b1`, confirmed `b9`, pending-host `b10`, paid `b11`, completed manual booking `b12`, and cancelled `b13`; a monthly booking is also included. Active trips appear before history. |
 | Shared lifecycle | As owner confirm `b10`; return to guest bookings to simulate its payment, then use owner check-in and completion. Changes appear in both contexts. |
 | Owner inventory | Open the draft `p3`, edit the property/unit, and publish. Other owner examples cover hotels, beds, ordinary apartments and monthly rentals. |
-| Calendar and direct use | Switch between a Monday–Sunday week and a calendar month. Multi-unit properties start collapsed and show unavailable / total counts for each day; expand “Кипарис” to see its rooms. Room `p2-102` is free June 12–16. Add a manual booking there, select its bar to inspect the guest, dates and price, then cancel. Select a free day to prefill the blocking form. Room `p2-202` is under maintenance until June 20; blocking occupied dates is rejected. |
+| Calendar and direct use | Switch between a Monday–Sunday week and a calendar month. Multi-unit properties start collapsed and show unavailable / total counts for each day; expand “Кипарис” to see its rooms. Room `p2-102` is free June 12–16. Add a manual booking there, select its bar to inspect the guest, dates and price, then follow “Открыть бронь” to its expanded booking card. “В календаре” returns to the check-in date; cancelled and completed bookings show details without occupying the timeline. Then cancel. Select a free day to prefill the blocking form. Room `p2-202` is under maintenance until June 20; blocking occupied dates is rejected. |
 | Nested owner views | On the hotel page, open “Календарь”: the property summary shows free, occupied and blocked units for the chosen day and expands to its rooms. In owner “Брони”, expand the property and then a room or bed to inspect and manage its bookings; empty units remain visible. |
 | Personal bot concept | Open “Мой бот”, create a simulated bot, stop it, and regenerate its demo token. This does not connect a Telegram account. |
 | Edge states | Profile can show loading and error/retry; a 500 ₽ nightly budget gives an empty result. Favorites, edited inventory and bookings survive reload. |
@@ -37,7 +41,7 @@ The historical June 12–16 / two guests / 6,000 ₽ / sea-view default is norma
 
 ## Verification boundaries
 
-The app uses browser-local demo data. Another browser starts from the seed. The shared grammY bot has isolated command tests; a real conversation requires a dedicated token if the configured bot already has a webhook. Yandex Maps requires a valid JavaScript API key and allowed domain for interactive markers.
+The app uses browser-local demo data. Another browser starts from the seed. The shared grammY bot has isolated command tests; a real conversation requires a dedicated token if the configured bot already has a webhook. Yandex Maps prefers JavaScript API 3.0 when the key accepts it (theme follows the app). If 3.0 is rejected or packages fail, the map falls back to API 2.1 with the same interactive markers and clusters. Only when both API loads fail does the keyless iframe appear; it keeps Yandex’s standard look and shows listing pins without in-app price selection.
 
 ## Image direction and provenance
 
