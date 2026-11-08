@@ -8,7 +8,7 @@ describe('home introduction', () => {
     const media = vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() } as unknown as MediaQueryList)
     try {
       const wrapper = await mountSuspended(HomeIntro, { route: '/', slots: { default: '<button>Search control</button>' } })
-      expect(wrapper.get('.home-search').attributes('inert')).toBeUndefined()
+      expect(wrapper.get('.search-content').attributes('inert')).toBeUndefined()
       wrapper.unmount()
     } finally { media.mockRestore() }
   })
@@ -20,7 +20,7 @@ describe('home introduction', () => {
     expect(new Set(shown).size).toBe(new Set(photos).size)
     expect(shown.every(image => photos.includes(image))).toBe(true)
     expect(wrapper.get('a').attributes('href')).toBe('#search')
-    expect(wrapper.get('.home-search').attributes('inert')).toBeDefined()
+    expect(wrapper.get('.search-content').attributes('inert')).toBeDefined()
     expect(wrapper.get('.home-search button').text()).toBe('Search control')
     wrapper.unmount()
   })

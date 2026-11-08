@@ -81,7 +81,19 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="home-reveal" :style="{ '--content-opacity': motion.contentOpacity }">
-  <div class="home-search-track"><div class="home-search" :inert="!reducedMotion && motion.contentOpacity < 1 || undefined"><slot /></div><div class="home-search-runway" aria-hidden="true"></div></div>
+  <div class="home-search-track">
+    <div class="home-search">
+      <header class="intro-heading">
+        <div class="intro-copy">
+          <div class="intro-brand">{{ brandName }}<span>.</span></div>
+          <p>Жильё для поездок и жизни</p>
+        </div>
+        <a class="intro-scroll" href="#search"><span>ЛИСТАЙТЕ ВНИЗ</span><span class="intro-scroll-line" aria-hidden="true"></span><span class="intro-search-link">Перейти к поиску ↓</span></a>
+      </header>
+      <div class="search-content" :inert="!reducedMotion && motion.contentOpacity < 1 || undefined"><slot /></div>
+    </div>
+    <div class="home-search-runway" aria-hidden="true"></div>
+  </div>
   <section ref="section" class="home-intro" :inert="motion.contentOpacity >= 1 || undefined" :aria-hidden="motion.contentOpacity >= 1 || undefined" aria-label="Локаль — жильё для поездок и жизни">
     <span id="search" class="search-anchor" aria-hidden="true"></span>
     <div ref="stage" class="intro-stage">
@@ -89,11 +101,6 @@ onBeforeUnmount(() => {
         <div v-for="(image, index) in images" :key="index" class="intro-tile" :style="motion.tiles[index]"><img :src="image" alt=""></div>
       </div>
       </div>
-      <div class="intro-copy">
-        <div class="intro-brand">{{ brandName }}<span>.</span></div>
-        <p>Жильё для поездок и жизни</p>
-      </div>
-      <a class="intro-scroll" href="#search"><span>ЛИСТАЙТЕ ВНИЗ</span><span class="intro-scroll-line" aria-hidden="true"></span><span class="intro-search-link">Перейти к поиску ↓</span></a>
     </div>
   </section>
   </div>
@@ -104,16 +111,18 @@ onBeforeUnmount(() => {
 .home-search-track,.home-intro{grid-area:1/1}
 .home-search-track{min-width:0}
 .home-search-runway{height:300svh}
-.home-search{position:sticky;top:0;min-height:100svh;opacity:var(--content-opacity)}
+.home-search{position:sticky;top:0;min-height:100svh;z-index:2;pointer-events:none}
+.intro-heading{position:relative;z-index:2;height:100svh;display:grid;place-items:center;color:#f5f4eb;pointer-events:none}
+.search-content{opacity:var(--content-opacity);pointer-events:auto}
 .home-intro{position:relative;height:400svh;color:#f5f4eb;z-index:1;pointer-events:none}
-.search-anchor{position:absolute;top:300svh;left:0}
+.search-anchor{position:absolute;top:400svh;left:0}
 .intro-stage{position:sticky;top:0;height:100svh;overflow:hidden;display:grid;place-items:center;isolation:isolate}
 .intro-stage::before{content:'';position:absolute;inset:0;background:#080c0a;opacity:calc(1 - var(--content-opacity));z-index:-1}
 .intro-grid-frame{position:absolute;top:50%;left:50%;width:min(720px,calc(100% - 56px));transform:translate(-50%,-50%)}
 .intro-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;will-change:transform}
 .intro-tile{aspect-ratio:1;overflow:hidden;will-change:transform,opacity}
 .intro-tile img{display:block;width:100%;height:100%;object-fit:cover}
-.intro-copy{position:relative;z-index:1;text-align:center;pointer-events:none;opacity:calc(1 - var(--content-opacity))}
+.intro-copy{position:relative;z-index:1;text-align:center;pointer-events:none}
 .intro-brand{font-size:clamp(76px,13vw,180px);font-weight:900;letter-spacing:-.085em;line-height:1.05;background:#d0f35b url('/demo/intro-map.svg') center/cover;-webkit-background-clip:text;background-clip:text;color:transparent}
 .intro-brand span{color:#d0f35b}
 .intro-copy p{margin-top:12px;font-size:clamp(15px,1.6vw,20px);color:#f5f4eb}
@@ -122,5 +131,5 @@ onBeforeUnmount(() => {
 .intro-search-link{letter-spacing:0;font-size:12px;font-weight:600}
 .intro-scroll:focus-visible{outline:2px solid #d0f35b;outline-offset:8px}
 @media(max-width:600px){.intro-copy{padding:0 20px}.intro-brand{font-size:clamp(68px,16vw,100px)}}
-@media(prefers-reduced-motion:reduce){.home-reveal{display:block}.home-intro,.home-search-runway{display:none}.home-search{position:static;opacity:1}.intro-tiles{display:none}}
+@media(prefers-reduced-motion:reduce){.home-reveal{display:block}.home-intro,.home-search-runway,.intro-heading{display:none}.home-search{position:static}.search-content{opacity:1}.intro-tiles{display:none}}
 </style>
