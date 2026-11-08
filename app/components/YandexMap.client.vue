@@ -44,8 +44,6 @@ function selectProperty(id) { clusterIds.value = []; emit('select', id) }
 function selectClusterProperty(id) {
   clusterIds.value = []
   emit('select', id)
-  // Same id does not retrigger the selected watcher; still reclaim the free-area frame.
-  if (props.selected === id) scheduleFocusSelected()
 }
 function currentZoom() {
   return engine.value === 'v3' ? map?.zoom : engine.value === 'v2' ? map?.getZoom?.() : 0

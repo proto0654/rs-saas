@@ -18,7 +18,7 @@ function measure() {
   const mobile = window.innerWidth <= 800
   padding.value = mobile
     ? [88, 16, Math.min(window.innerHeight - 140, window.innerHeight - bounds.top + 16), 16]
-    : [104, 24, 48, Math.min(window.innerWidth - 200, bounds.right + 24)]
+    : [104, 24, 200, Math.min(window.innerWidth - 200, bounds.right + 24)]
 }
 onMounted(() => {
   measure()
@@ -48,7 +48,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
 
 <style scoped>
 .search-workspace{position:fixed;inset:0;pointer-events:none}
-.search-panel{position:fixed;z-index:3;top:96px;bottom:24px;left:24px;width:min(460px,40vw);padding:20px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;pointer-events:auto;background:var(--surface-glass);border:1px solid #465448;border-radius:20px;box-shadow:0 12px 40px #0004}
+.search-panel{position:fixed;z-index:3;top:96px;bottom:72px;left:24px;width:min(460px,40vw);padding:20px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;pointer-events:auto;background:var(--surface-glass);border:1px solid #465448;border-radius:20px;box-shadow:0 12px 40px #0004}
 .search-panel-handle{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:36px;border:0;background:none;color:var(--text-muted);font-size:12px;margin-bottom:14px}
 .search-map-layer{position:fixed;inset:0;z-index:0;pointer-events:auto;filter:none;transition:filter .5s ease}
 .search-map-layer.is-intro{filter:grayscale(1)}
@@ -56,7 +56,12 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
 .search-map-layer :deep(.map){position:absolute;inset:0;height:100%;min-height:0;border:0;border-radius:0}
 @media(prefers-reduced-motion:reduce){.search-map-layer{transition:none}}
 .search-map-layer :deep(.map-card),
-.search-map-layer :deep(.map-cluster-list){left:auto;right:24px;bottom:48px;width:min(440px,calc(100vw - var(--map-left) - 48px))}
+.search-map-layer :deep(.map-cluster-list){left:auto;right:24px;bottom:24px;width:min(440px,calc(100vw - var(--map-left) - 48px))}
+.search-map-layer :deep(.map-card){padding:12px 40px 12px 12px;gap:14px;align-items:stretch}
+.search-map-layer :deep(.map-card img){width:128px;height:128px;border-radius:12px}
+.search-map-layer :deep(.map-card>div:not(.map-actions)){gap:4px;align-content:start}
+.search-map-layer :deep(.map-card strong){font-size:15px;line-height:1.25;-webkit-line-clamp:unset;display:block}
+.search-map-layer :deep(.map-card-desc){margin:2px 0 0;font-size:12px;line-height:1.35;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .search-map-layer :deep(.map-empty){left:calc(var(--map-left) + (100% - var(--map-left) - var(--map-right))/2);top:calc(var(--map-top) + (100% - var(--map-top) - var(--map-bottom))/2)}
 .search-map-layer :deep(.map-provider-hint){top:var(--map-top);left:var(--map-left);max-width:calc(100% - var(--map-left) - var(--map-right))}
 .search-panel :deep(.search-heading){display:flex;margin:0 0 18px}
@@ -88,10 +93,11 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
   .search-panel :deep(.search-heading p){display:none}
   .search-map-layer :deep(.map-card),
   .search-map-layer :deep(.map-cluster-list){left:10px;right:10px;bottom:var(--map-bottom);width:auto}
-  .search-map-layer :deep(.map-card){padding:6px 32px 6px 6px}
+  .search-map-layer :deep(.map-card){padding:6px 32px 6px 6px;gap:10px}
   .search-map-layer :deep(.map-card img),
   .search-map-layer :deep(.map-cluster-item img){width:72px;height:72px}
   .search-map-layer :deep(.map-card strong),
   .search-map-layer :deep(.map-cluster-item strong){font-size:13px}
+  .search-map-layer :deep(.map-card-desc){-webkit-line-clamp:2;font-size:11px}
 }
 </style>

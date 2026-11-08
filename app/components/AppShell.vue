@@ -33,7 +33,7 @@ onMounted(() => {
 
 <style scoped>
 .map-search-shell{padding-bottom:0;min-height:100dvh}
-.map-search-shell>.topbar{position:fixed;z-index:8;top:0;left:0;right:0;max-width:none;background:transparent;pointer-events:auto}
+.map-search-shell>.topbar{position:fixed;z-index:8;top:0;left:0;right:0;max-width:none;margin:0;padding:0 24px;background:transparent;pointer-events:auto}
 .map-search-shell>.topbar:not(.is-intro){background:color-mix(in srgb,var(--surface-page) 62%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 .map-search-shell>.topbar.is-intro{color:var(--text-main);border-bottom-color:color-mix(in srgb,var(--text-main) 18%,transparent)}
 .map-search-shell>.topbar.is-intro .desktop-links{color:var(--text-muted)}
