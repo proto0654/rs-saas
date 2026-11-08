@@ -1,0 +1,56 @@
+// @vitest-environment happy-dom
+import { describe, expect, it } from 'vitest'
+import { mount } from '@vue/test-utils'
+import seed from '../../demo/seed.json'
+import HostCalendar from '../../app/components/HostCalendar.vue'
+
+describe('host calendar', () => {
+  it('groups rooms by property and shows unavailable counts before expanding', async () => {
+    const units = seed.units.filter(unit => ['p2-101', 'p2-102', 'p2-202'].includes(unit.id))
+    const wrapper = mount(HostCalendar, { props: { db: seed, units, start: '2027-06-12' } })
+    const toggle = wrapper.get('.calendar-group-toggle')
+    expect(toggle.attributes('aria-expanded')).toBe('false')
+    expect(toggle.text()).toContain('Свободно 1 · занято 1 · закрыто 1')
+    expect(wrapper.findAll('.calendar-group-day')[5]!.text()).toBe('2/3')
+    expect(wrapper.find('button.timeline-booking').exists()).toBe(false)
+    await toggle.trigger('click')
+    expect(toggle.attributes('aria-expanded')).toBe('true')
+    expect(wrapper.find('button.timeline-booking').exists()).toBe(true)
+    expect(wrapper.find('.timeline-block').exists()).toBe(true)
+    await wrapper.get('button.timeline-booking').trigger('click')
+    expect(wrapper.get('.calendar-detail').text()).toContain('Гость заселён')
+    await toggle.trigger('click')
+    expect(wrapper.find('button.timeline-booking').exists()).toBe(false)
+    expect(wrapper.get('.calendar-detail').text()).toContain('Нажмите на бронирование')
+    const changed = structuredClone(seed)
+    changed.bookings.find(booking => booking.id === 'b1')!.status = 'cancelled'
+    await wrapper.setProps({ db: changed })
+    expect(wrapper.findAll('.calendar-group-day')[5]!.text()).toBe('1/3')
+    wrapper.unmount()
+  })
+  it('renders booking spans, opens details and selects only free dates for blocking', async () => {
+    const units = seed.units.filter(unit => ['p1-whole', 'p2-202'].includes(unit.id))
+    const wrapper = mount(HostCalendar, { props: { db: seed, units, start: '2027-06-12' } })
+    expect(wrapper.findAll('thead th')).toHaveLength(8)
+    await wrapper.get('button[aria-label="Следующая неделя"]').trigger('click')
+    expect(wrapper.emitted('update:start')?.[0]).toEqual(['2027-06-14'])
+    await wrapper.findAll('.calendar-modes button')[1]!.trigger('click')
+    expect(wrapper.findAll('thead th')).toHaveLength(31)
+    await wrapper.get('.calendar-group-toggle').trigger('click')
+    const booking = wrapper.get('button[aria-label^="Терраса над Ялтой, Целиком: Анна"]')
+    expect(booking.element.parentElement?.getAttribute('colspan')).toBe('3')
+    expect(wrapper.get('.timeline-block').text()).toContain('Закрыто')
+    await booking.trigger('click')
+    expect(wrapper.get('.calendar-detail').text()).toContain('Подтверждена')
+    expect(wrapper.get('.calendar-detail').text()).toContain('12 600 ₽')
+    await wrapper.get('[aria-label="Закрыть сведения о бронировании"]').trigger('click')
+    expect(wrapper.get('.calendar-detail').text()).toContain('Нажмите на бронирование')
+    await booking.trigger('click')
+    await wrapper.get('button[aria-label="Терраса над Ялтой, Целиком, 12 июн.: свободно, выбрать для блокировки"]').trigger('click')
+    expect(wrapper.emitted('block-select')?.[0]).toEqual(['p1-whole', '2027-06-12'])
+    expect(wrapper.get('.calendar-detail').text()).toContain('Нажмите на бронирование')
+    await wrapper.get('button[aria-label="Следующий месяц"]').trigger('click')
+    expect(wrapper.emitted('update:start')?.[1]).toEqual(['2027-07-01'])
+    wrapper.unmount()
+  })
+})

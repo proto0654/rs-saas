@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@plugin "daisyui" { themes: false; }
+@plugin "daisyui/theme" {
+  name: "mesto";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #0c1210;
+  --color-base-200: #18201c;
+  --color-base-300: #222b25;
+  --color-base-content: #f5f4eb;
+  --color-primary: #d0f35b;
+  --color-primary-content: #11160b;
+  --color-secondary: #a8b1a4;
+  --color-secondary-content: #0c1210;
+  --color-accent: #d0f35b;
+  --color-accent-content: #11160b;
+  --color-neutral: #3a443d;
+  --color-neutral-content: #f5f4eb;
+  --color-info: #8fc8e8;
+  --color-info-content: #092433;
+  --color-success: #a5d878;
+  --color-success-content: #14280c;
+  --color-warning: #edce7a;
+  --color-warning-content: #332709;
+  --color-error: #ec9c98;
+  --color-error-content: #360e0c;
+  --radius-selector: 0.75rem;
+  --radius-field: 0.875rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+@theme {
+  --color-muted: #a8b1a4;
+  --color-outline: #3a443d;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+}
+/* Manrope не загружается этим файлом: добавить локальные font files отдельно
+   или оставить системный fallback. */
+@layer base {
+  body { margin: 0; background: var(--color-base-100); color: var(--color-base-content); }
+  :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+}

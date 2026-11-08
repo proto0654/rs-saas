@@ -1,0 +1,3208 @@
+{
+  "schemaVersion": 2,
+  "demoToday": "2027-06-12",
+  "timezone": "Europe/Moscow",
+  "defaultSearch": {
+    "checkIn": "2027-06-12",
+    "checkOut": "2027-06-16",
+    "guests": 2,
+    "maxPrice": 6000,
+    "city": null,
+    "amenities": [
+      "sea_view"
+    ],
+    "rentalMode": "short_term"
+  },
+  "users": [
+    {
+      "id": "host1",
+      "name": "Алексей · демо",
+      "role": "host"
+    },
+    {
+      "id": "host2",
+      "name": "Марина · демо",
+      "role": "host"
+    },
+    {
+      "id": "guest1",
+      "name": "Сергей · демо",
+      "role": "guest"
+    },
+    {
+      "id": "guest2",
+      "name": "Анна · демо",
+      "role": "guest"
+    }
+  ],
+  "properties": [
+    {
+      "id": "p1",
+      "ownerId": "host1",
+      "title": "Терраса над Ялтой",
+      "type": "apartment",
+      "city": "Ялта",
+      "location": {
+        "lat": 44.51,
+        "lon": 34.18
+      },
+      "status": "published",
+      "amenities": [
+        "sea_view",
+        "terrace",
+        "wifi"
+      ],
+      "videoVerified": true,
+      "rating": 4.9,
+      "reviewCount": 128,
+      "description": "Апартаменты с открытой террасой и видом на Ялтинскую бухту. Пространство для спокойного отдыха у моря. Демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p1.png",
+        "/demo/photo-p1-interior.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p2",
+      "ownerId": "host1",
+      "title": "Кипарис",
+      "type": "hotel",
+      "city": "Гурзуф",
+      "location": {
+        "lat": 44.546,
+        "lon": 34.28
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking"
+      ],
+      "videoVerified": true,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Небольшой отель в Гурзуфе с восемью отдельными номерами. Можно выбрать конкретный свободный номер под число гостей и даты поездки. Демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png",
+        "/demo/photo-p2-room.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p3",
+      "ownerId": "host1",
+      "title": "Студия у моря",
+      "type": "apartment",
+      "city": "Алушта",
+      "location": {
+        "lat": 44.67,
+        "lon": 34.41
+      },
+      "status": "draft",
+      "amenities": [
+        "sea_view",
+        "wifi"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Светлая студия для двоих в Алуште. Черновик для демонстрации редактирования, настройки цены и публикации объекта.",
+      "images": [
+        "/demo/photo-p3.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p4",
+      "ownerId": "host2",
+      "title": "Можжевельник",
+      "type": "hostel",
+      "city": "Алушта",
+      "location": {
+        "lat": 44.675,
+        "lon": 34.414
+      },
+      "status": "published",
+      "amenities": [
+        "wifi"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Хостел для самостоятельных путешественников. Каждое койко-место бронируется отдельно на одного гостя. Демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p5",
+      "ownerId": "host2",
+      "title": "Дом у скалы",
+      "type": "house",
+      "city": "Симеиз",
+      "location": {
+        "lat": 44.405,
+        "lon": 34.006
+      },
+      "status": "published",
+      "amenities": [
+        "terrace",
+        "parking",
+        "sea_view"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Просторный дом для компании до шести гостей. Подходит для отдыха большой семьёй; уборка включается в расчёт отдельной строкой. Демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p5.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p6",
+      "ownerId": "host2",
+      "title": "Балкон над парком",
+      "type": "apartment",
+      "city": "Алупка",
+      "location": {
+        "lat": 44.42,
+        "lon": 34.045
+      },
+      "status": "published",
+      "amenities": [
+        "sea_view",
+        "terrace",
+        "wifi"
+      ],
+      "videoVerified": true,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Уютные апартаменты с балконом для неспешных завтраков и отдыха. До трёх гостей; стоимость уборки показана до оформления. Демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p6.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p7",
+      "ownerId": "host2",
+      "title": "Тихий двор",
+      "type": "apartment",
+      "city": "Ялта",
+      "location": {
+        "lat": 44.502,
+        "lon": 34.16
+      },
+      "status": "published",
+      "amenities": [
+        "wifi"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Небольшая квартира для двоих с доступной ценой за ночь. Отменённая бронь в примерах не закрывает даты для новых гостей. Демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p7.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p8",
+      "ownerId": "host2",
+      "title": "Южная веранда",
+      "type": "house",
+      "city": "Ливадия",
+      "location": {
+        "lat": 44.47,
+        "lon": 34.144
+      },
+      "status": "published",
+      "amenities": [
+        "terrace",
+        "wifi"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Гостевой дом с южной верандой и тихим местом для отдыха. Размещение целиком для компании до четырёх гостей. Демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p8.png"
+      ],
+      "region": "crimea",
+      "rentalMode": "short_term"
+    },
+    {
+      "id": "p9",
+      "ownerId": "host1",
+      "title": "Студия · Севастополь",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Севастополь",
+      "location": {
+        "lat": 44.616,
+        "lon": 33.517
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning",
+        "terrace",
+        "sea_view"
+      ],
+      "videoVerified": true,
+      "rating": 4.3,
+      "reviewCount": 71,
+      "description": "Студия для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Севастополь.",
+      "images": [
+        "/demo/ordinary-apartment-1.png"
+      ]
+    },
+    {
+      "id": "p10",
+      "ownerId": "host2",
+      "title": "Однокомнатная квартира · Симферополь",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Симферополь",
+      "location": {
+        "lat": 44.944,
+        "lon": 34.1
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.4,
+      "reviewCount": 78,
+      "description": "Однокомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Симферополь.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p11",
+      "ownerId": "host2",
+      "title": "Двухкомнатная квартира · Евпатория",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Евпатория",
+      "location": {
+        "lat": 45.187,
+        "lon": 33.363
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.5,
+      "reviewCount": 85,
+      "description": "Двухкомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Евпатория.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p12",
+      "ownerId": "host1",
+      "title": "Семейная квартира · Феодосия",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Феодосия",
+      "location": {
+        "lat": 45.03,
+        "lon": 35.374
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": true,
+      "rating": 4.6,
+      "reviewCount": 92,
+      "description": "Семейная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Феодосия.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p13",
+      "ownerId": "host2",
+      "title": "Студия · Судак",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Судак",
+      "location": {
+        "lat": 44.853,
+        "lon": 34.967
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning",
+        "terrace"
+      ],
+      "videoVerified": false,
+      "rating": 4.7,
+      "reviewCount": 9,
+      "description": "Студия для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Судак.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p14",
+      "ownerId": "host2",
+      "title": "Однокомнатная квартира · Керчь",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Керчь",
+      "location": {
+        "lat": 45.366,
+        "lon": 36.47
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.8,
+      "reviewCount": 16,
+      "description": "Однокомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Керчь.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p15",
+      "ownerId": "host1",
+      "title": "Двухкомнатная квартира · Краснодар",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Краснодар",
+      "location": {
+        "lat": 45.034,
+        "lon": 38.983
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": true,
+      "rating": 4.9,
+      "reviewCount": 23,
+      "description": "Двухкомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Краснодар.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p16",
+      "ownerId": "host2",
+      "title": "Семейная квартира · Анапа",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Анапа",
+      "location": {
+        "lat": 44.897,
+        "lon": 37.314
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.2,
+      "reviewCount": 30,
+      "description": "Семейная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Анапа.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p17",
+      "ownerId": "host2",
+      "title": "Студия · Геленджик",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Геленджик",
+      "location": {
+        "lat": 44.56,
+        "lon": 38.077
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning",
+        "terrace"
+      ],
+      "videoVerified": false,
+      "rating": 4.3,
+      "reviewCount": 37,
+      "description": "Студия для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Геленджик.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p18",
+      "ownerId": "host1",
+      "title": "Однокомнатная квартира · Сочи",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Сочи",
+      "location": {
+        "lat": 43.593,
+        "lon": 39.72
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": true,
+      "rating": 4.4,
+      "reviewCount": 44,
+      "description": "Однокомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Сочи.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p19",
+      "ownerId": "host2",
+      "title": "Двухкомнатная квартира · Новороссийск",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Новороссийск",
+      "location": {
+        "lat": 44.726,
+        "lon": 37.773
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.5,
+      "reviewCount": 51,
+      "description": "Двухкомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Новороссийск.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p20",
+      "ownerId": "host2",
+      "title": "Семейная квартира · Туапсе",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Туапсе",
+      "location": {
+        "lat": 44.094,
+        "lon": 39.064
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 58,
+      "description": "Семейная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Туапсе.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p21",
+      "ownerId": "host1",
+      "title": "Студия · Ейск",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Ейск",
+      "location": {
+        "lat": 46.707,
+        "lon": 38.277
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning",
+        "terrace",
+        "sea_view"
+      ],
+      "videoVerified": true,
+      "rating": 4.7,
+      "reviewCount": 65,
+      "description": "Студия для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Ейск.",
+      "images": [
+        "/demo/ordinary-apartment-1.png"
+      ]
+    },
+    {
+      "id": "p22",
+      "ownerId": "host2",
+      "title": "Однокомнатная квартира · Ростов-на-Дону",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Ростов-на-Дону",
+      "location": {
+        "lat": 47.22,
+        "lon": 39.71
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.8,
+      "reviewCount": 72,
+      "description": "Однокомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Ростов-на-Дону.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p23",
+      "ownerId": "host2",
+      "title": "Двухкомнатная квартира · Таганрог",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Таганрог",
+      "location": {
+        "lat": 47.213,
+        "lon": 38.933
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.9,
+      "reviewCount": 79,
+      "description": "Двухкомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Таганрог.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p24",
+      "ownerId": "host1",
+      "title": "Семейная квартира · Астрахань",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Астрахань",
+      "location": {
+        "lat": 46.356,
+        "lon": 48.034
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": true,
+      "rating": 4.2,
+      "reviewCount": 86,
+      "description": "Семейная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Астрахань.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p25",
+      "ownerId": "host2",
+      "title": "Студия · Волгоград",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Волгоград",
+      "location": {
+        "lat": 48.704,
+        "lon": 44.507
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning",
+        "terrace"
+      ],
+      "videoVerified": false,
+      "rating": 4.3,
+      "reviewCount": 93,
+      "description": "Студия для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Волгоград.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p26",
+      "ownerId": "host2",
+      "title": "Однокомнатная квартира · Кисловодск",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Кисловодск",
+      "location": {
+        "lat": 43.907,
+        "lon": 42.72
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.4,
+      "reviewCount": 10,
+      "description": "Однокомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Кисловодск.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p27",
+      "ownerId": "host1",
+      "title": "Двухкомнатная квартира · Пятигорск",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Пятигорск",
+      "location": {
+        "lat": 44.04,
+        "lon": 43.063
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": true,
+      "rating": 4.5,
+      "reviewCount": 17,
+      "description": "Двухкомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Пятигорск.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p28",
+      "ownerId": "host2",
+      "title": "Семейная квартира · Махачкала",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Махачкала",
+      "location": {
+        "lat": 42.983,
+        "lon": 47.494
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 24,
+      "description": "Семейная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Махачкала.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p29",
+      "ownerId": "host2",
+      "title": "Студия · Дербент",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Дербент",
+      "location": {
+        "lat": 42.066,
+        "lon": 48.287
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning",
+        "terrace"
+      ],
+      "videoVerified": false,
+      "rating": 4.7,
+      "reviewCount": 31,
+      "description": "Студия для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Дербент.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p30",
+      "ownerId": "host1",
+      "title": "Однокомнатная квартира · Севастополь",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Севастополь",
+      "location": {
+        "lat": 44.604,
+        "lon": 33.52
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": true,
+      "rating": 4.8,
+      "reviewCount": 38,
+      "description": "Однокомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Севастополь.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p31",
+      "ownerId": "host2",
+      "title": "Двухкомнатная квартира · Симферополь",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Симферополь",
+      "location": {
+        "lat": 44.947,
+        "lon": 34.103
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.9,
+      "reviewCount": 45,
+      "description": "Двухкомнатная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Симферополь.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p32",
+      "ownerId": "host2",
+      "title": "Семейная квартира · Евпатория",
+      "type": "apartment",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Евпатория",
+      "location": {
+        "lat": 45.19,
+        "lon": 33.354
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "air_conditioning"
+      ],
+      "videoVerified": false,
+      "rating": 4.2,
+      "reviewCount": 52,
+      "description": "Семейная квартира для обычной поездки: отдельная кухня, Wi-Fi и бытовые удобства. Вместимость и полная стоимость указаны до бронирования. Вымышленное объявление в городе Евпатория.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p33",
+      "ownerId": "host1",
+      "title": "Студия на месяц · Краснодар",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "krasnodar",
+      "city": "Краснодар",
+      "location": {
+        "lat": 45.043,
+        "lon": 38.977
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": true,
+      "rating": 4.3,
+      "reviewCount": 59,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p34",
+      "ownerId": "host2",
+      "title": "Квартира для жизни · Ростов-на-Дону",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "south",
+      "city": "Ростов-на-Дону",
+      "location": {
+        "lat": 47.226,
+        "lon": 39.71
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.4,
+      "reviewCount": 66,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p35",
+      "ownerId": "host2",
+      "title": "Двушка с рабочим местом · Симферополь",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "crimea",
+      "city": "Симферополь",
+      "location": {
+        "lat": 44.944,
+        "lon": 34.103
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.5,
+      "reviewCount": 73,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p36",
+      "ownerId": "host1",
+      "title": "Студия на месяц · Севастополь",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "crimea",
+      "city": "Севастополь",
+      "location": {
+        "lat": 44.607,
+        "lon": 33.514
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": true,
+      "rating": 4.6,
+      "reviewCount": 80,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p37",
+      "ownerId": "host2",
+      "title": "Квартира для жизни · Сочи",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "krasnodar",
+      "city": "Сочи",
+      "location": {
+        "lat": 43.59,
+        "lon": 39.717
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.7,
+      "reviewCount": 87,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p38",
+      "ownerId": "host2",
+      "title": "Двушка с рабочим местом · Анапа",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "krasnodar",
+      "city": "Анапа",
+      "location": {
+        "lat": 44.903,
+        "lon": 37.32
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.8,
+      "reviewCount": 94,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p39",
+      "ownerId": "host1",
+      "title": "Студия на месяц · Волгоград",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "south",
+      "city": "Волгоград",
+      "location": {
+        "lat": 48.716,
+        "lon": 44.513
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": true,
+      "rating": 4.9,
+      "reviewCount": 11,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p40",
+      "ownerId": "host2",
+      "title": "Квартира для жизни · Астрахань",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "south",
+      "city": "Астрахань",
+      "location": {
+        "lat": 46.344,
+        "lon": 48.034
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.2,
+      "reviewCount": 18,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p41",
+      "ownerId": "host2",
+      "title": "Двушка с рабочим местом · Махачкала",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "south",
+      "city": "Махачкала",
+      "location": {
+        "lat": 42.977,
+        "lon": 47.497
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.3,
+      "reviewCount": 25,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p42",
+      "ownerId": "host1",
+      "title": "Студия на месяц · Пятигорск",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "south",
+      "city": "Пятигорск",
+      "location": {
+        "lat": 44.04,
+        "lon": 43.06
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": true,
+      "rating": 4.4,
+      "reviewCount": 32,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p43",
+      "ownerId": "host2",
+      "title": "Квартира для жизни · Евпатория",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "crimea",
+      "city": "Евпатория",
+      "location": {
+        "lat": 45.193,
+        "lon": 33.363
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.5,
+      "reviewCount": 39,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p44",
+      "ownerId": "host2",
+      "title": "Двушка с рабочим местом · Новороссийск",
+      "type": "apartment",
+      "rentalMode": "long_term",
+      "region": "krasnodar",
+      "city": "Новороссийск",
+      "location": {
+        "lat": 44.726,
+        "lon": 37.764
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 46,
+      "description": "Обычная квартира для длительного проживания. Аренда от 30 ночей; цена за месяц из 30 дней, неполный месяц рассчитывается пропорционально. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/ordinary-apartment-2.png"
+      ]
+    },
+    {
+      "id": "p45",
+      "ownerId": "host1",
+      "title": "Хостел «Попутчик» · Севастополь",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Севастополь",
+      "location": {
+        "lat": 44.604,
+        "lon": 33.517
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": true,
+      "rating": 4.7,
+      "reviewCount": 53,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p46",
+      "ownerId": "host2",
+      "title": "Хостел «Попутчик» · Симферополь",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Симферополь",
+      "location": {
+        "lat": 44.947,
+        "lon": 34.1
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.8,
+      "reviewCount": 60,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p47",
+      "ownerId": "host2",
+      "title": "Хостел «Попутчик» · Краснодар",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Краснодар",
+      "location": {
+        "lat": 45.04,
+        "lon": 38.983
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.9,
+      "reviewCount": 67,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p48",
+      "ownerId": "host1",
+      "title": "Хостел «Попутчик» · Сочи",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Сочи",
+      "location": {
+        "lat": 43.593,
+        "lon": 39.714
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": true,
+      "rating": 4.2,
+      "reviewCount": 74,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p49",
+      "ownerId": "host2",
+      "title": "Хостел «Попутчик» · Анапа",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Анапа",
+      "location": {
+        "lat": 44.906,
+        "lon": 37.317
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.3,
+      "reviewCount": 81,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p50",
+      "ownerId": "host2",
+      "title": "Хостел «Попутчик» · Ростов-на-Дону",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Ростов-на-Дону",
+      "location": {
+        "lat": 47.214,
+        "lon": 39.71
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.4,
+      "reviewCount": 88,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p51",
+      "ownerId": "host1",
+      "title": "Хостел «Попутчик» · Махачкала",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Махачкала",
+      "location": {
+        "lat": 42.977,
+        "lon": 47.503
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": true,
+      "rating": 4.5,
+      "reviewCount": 95,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p52",
+      "ownerId": "host2",
+      "title": "Хостел «Попутчик» · Волгоград",
+      "type": "hostel",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Волгоград",
+      "location": {
+        "lat": 48.71,
+        "lon": 44.504
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "kitchen",
+        "washer"
+      ],
+      "videoVerified": false,
+      "rating": 4.6,
+      "reviewCount": 12,
+      "description": "Бюджетный хостел с отдельным бронированием каждого койко-места. Кухня и общие зоны, Wi-Fi, шкафчики. Одна бронь — одно место на одного гостя. Вымышленное объявление.",
+      "images": [
+        "/demo/photo-p4.png"
+      ]
+    },
+    {
+      "id": "p53",
+      "ownerId": "host2",
+      "title": "Гостевой дом «Тихий двор» · Судак",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Судак",
+      "location": {
+        "lat": 44.853,
+        "lon": 34.967
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking",
+        "sea_view",
+        "terrace"
+      ],
+      "videoVerified": false,
+      "rating": 4.7,
+      "reviewCount": 19,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    },
+    {
+      "id": "p54",
+      "ownerId": "host1",
+      "title": "Гостевой дом «Тихий двор» · Феодосия",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "crimea",
+      "city": "Феодосия",
+      "location": {
+        "lat": 45.036,
+        "lon": 35.38
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking"
+      ],
+      "videoVerified": true,
+      "rating": 4.8,
+      "reviewCount": 26,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    },
+    {
+      "id": "p55",
+      "ownerId": "host2",
+      "title": "Гостевой дом «Тихий двор» · Геленджик",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Геленджик",
+      "location": {
+        "lat": 44.554,
+        "lon": 38.083
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking",
+        "sea_view",
+        "terrace"
+      ],
+      "videoVerified": false,
+      "rating": 4.9,
+      "reviewCount": 33,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    },
+    {
+      "id": "p56",
+      "ownerId": "host2",
+      "title": "Гостевой дом «Тихий двор» · Туапсе",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Туапсе",
+      "location": {
+        "lat": 44.097,
+        "lon": 39.064
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking"
+      ],
+      "videoVerified": false,
+      "rating": 4.2,
+      "reviewCount": 40,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    },
+    {
+      "id": "p57",
+      "ownerId": "host1",
+      "title": "Гостевой дом «Тихий двор» · Кисловодск",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Кисловодск",
+      "location": {
+        "lat": 43.91,
+        "lon": 42.717
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking",
+        "terrace"
+      ],
+      "videoVerified": true,
+      "rating": 4.3,
+      "reviewCount": 47,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    },
+    {
+      "id": "p58",
+      "ownerId": "host2",
+      "title": "Гостевой дом «Тихий двор» · Пятигорск",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Пятигорск",
+      "location": {
+        "lat": 44.043,
+        "lon": 43.06
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking"
+      ],
+      "videoVerified": false,
+      "rating": 4.4,
+      "reviewCount": 54,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    },
+    {
+      "id": "p59",
+      "ownerId": "host2",
+      "title": "Гостевой дом «Тихий двор» · Дербент",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "south",
+      "city": "Дербент",
+      "location": {
+        "lat": 42.066,
+        "lon": 48.293
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking",
+        "sea_view",
+        "terrace"
+      ],
+      "videoVerified": false,
+      "rating": 4.5,
+      "reviewCount": 61,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    },
+    {
+      "id": "p60",
+      "ownerId": "host1",
+      "title": "Гостевой дом «Тихий двор» · Ейск",
+      "type": "hotel",
+      "rentalMode": "short_term",
+      "region": "krasnodar",
+      "city": "Ейск",
+      "location": {
+        "lat": 46.704,
+        "lon": 38.274
+      },
+      "status": "published",
+      "amenities": [
+        "wifi",
+        "parking"
+      ],
+      "videoVerified": true,
+      "rating": 4.6,
+      "reviewCount": 68,
+      "description": "Небольшой гостевой дом с тремя самостоятельными номерами. Выберите конкретный номер под даты и число гостей. Вымышленное демонстрационное объявление.",
+      "images": [
+        "/demo/photo-p2.png"
+      ]
+    }
+  ],
+  "units": [
+    {
+      "id": "p1-whole",
+      "propertyId": "p1",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 4200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p2-101",
+      "propertyId": "p2",
+      "label": "№101",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 3800,
+      "cleaningFee": 0,
+      "image": "/demo/photo-p2-room.png"
+    },
+    {
+      "id": "p2-102",
+      "propertyId": "p2",
+      "label": "№102",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 3800,
+      "cleaningFee": 0,
+      "image": "/demo/photo-p2-room.png"
+    },
+    {
+      "id": "p2-201",
+      "propertyId": "p2",
+      "label": "№201",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 5600,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p2-202",
+      "propertyId": "p2",
+      "label": "№202",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 6400,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p2-203",
+      "propertyId": "p2",
+      "label": "№203",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 4000,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p2-301",
+      "propertyId": "p2",
+      "label": "№301",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 5800,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p2-302",
+      "propertyId": "p2",
+      "label": "№302",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 4200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p2-303",
+      "propertyId": "p2",
+      "label": "№303",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 6800,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p3-whole",
+      "propertyId": "p3",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 3200,
+      "cleaningFee": 700
+    },
+    {
+      "id": "p4-bed1",
+      "propertyId": "p4",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p4-bed2",
+      "propertyId": "p4",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p4-bed3",
+      "propertyId": "p4",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p4-bed4",
+      "propertyId": "p4",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p4-bed5",
+      "propertyId": "p4",
+      "label": "Комната А · место 5",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p4-bed6",
+      "propertyId": "p4",
+      "label": "Комната А · место 6",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1200,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p5-whole",
+      "propertyId": "p5",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 6,
+      "baseNightly": 8500,
+      "cleaningFee": 700
+    },
+    {
+      "id": "p6-whole",
+      "propertyId": "p6",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 3,
+      "baseNightly": 5600,
+      "cleaningFee": 700
+    },
+    {
+      "id": "p7-whole",
+      "propertyId": "p7",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 2900,
+      "cleaningFee": 700
+    },
+    {
+      "id": "p8-whole",
+      "propertyId": "p8",
+      "label": "Целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 6200,
+      "cleaningFee": 700
+    },
+    {
+      "id": "p9-1",
+      "propertyId": "p9",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 1800,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p10-1",
+      "propertyId": "p10",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 2300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p11-1",
+      "propertyId": "p11",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 3000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p12-1",
+      "propertyId": "p12",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 5,
+      "baseNightly": 3500,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p13-1",
+      "propertyId": "p13",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 4300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p14-1",
+      "propertyId": "p14",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 5300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p15-1",
+      "propertyId": "p15",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 1800,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p16-1",
+      "propertyId": "p16",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 5,
+      "baseNightly": 2300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p17-1",
+      "propertyId": "p17",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 3000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p18-1",
+      "propertyId": "p18",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 3500,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p19-1",
+      "propertyId": "p19",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 4300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p20-1",
+      "propertyId": "p20",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 5,
+      "baseNightly": 5300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p21-1",
+      "propertyId": "p21",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 1800,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p22-1",
+      "propertyId": "p22",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 2300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p23-1",
+      "propertyId": "p23",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 3000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p24-1",
+      "propertyId": "p24",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 5,
+      "baseNightly": 3500,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p25-1",
+      "propertyId": "p25",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 4300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p26-1",
+      "propertyId": "p26",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 5300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p27-1",
+      "propertyId": "p27",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 1800,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p28-1",
+      "propertyId": "p28",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 5,
+      "baseNightly": 2300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p29-1",
+      "propertyId": "p29",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 3000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p30-1",
+      "propertyId": "p30",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 3500,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p31-1",
+      "propertyId": "p31",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 4300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p32-1",
+      "propertyId": "p32",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 5,
+      "baseNightly": 5300,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p33-1",
+      "propertyId": "p33",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 28000
+    },
+    {
+      "id": "p34-1",
+      "propertyId": "p34",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 3,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 32000
+    },
+    {
+      "id": "p35-1",
+      "propertyId": "p35",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 38000
+    },
+    {
+      "id": "p36-1",
+      "propertyId": "p36",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 42000
+    },
+    {
+      "id": "p37-1",
+      "propertyId": "p37",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 3,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 55000
+    },
+    {
+      "id": "p38-1",
+      "propertyId": "p38",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 36000
+    },
+    {
+      "id": "p39-1",
+      "propertyId": "p39",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 30000
+    },
+    {
+      "id": "p40-1",
+      "propertyId": "p40",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 3,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 26000
+    },
+    {
+      "id": "p41-1",
+      "propertyId": "p41",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 33000
+    },
+    {
+      "id": "p42-1",
+      "propertyId": "p42",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 2,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 35000
+    },
+    {
+      "id": "p43-1",
+      "propertyId": "p43",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 3,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 29000
+    },
+    {
+      "id": "p44-1",
+      "propertyId": "p44",
+      "label": "Квартира целиком",
+      "kind": "entire",
+      "capacity": 4,
+      "baseNightly": 0,
+      "cleaningFee": 0,
+      "baseMonthly": 40000
+    },
+    {
+      "id": "p45-1",
+      "propertyId": "p45",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 650,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p45-2",
+      "propertyId": "p45",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 650,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p45-3",
+      "propertyId": "p45",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 650,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p45-4",
+      "propertyId": "p45",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 650,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p46-1",
+      "propertyId": "p46",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 750,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p46-2",
+      "propertyId": "p46",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 750,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p46-3",
+      "propertyId": "p46",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 750,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p46-4",
+      "propertyId": "p46",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 750,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p47-1",
+      "propertyId": "p47",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 850,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p47-2",
+      "propertyId": "p47",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 850,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p47-3",
+      "propertyId": "p47",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 850,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p47-4",
+      "propertyId": "p47",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 850,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p48-1",
+      "propertyId": "p48",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 950,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p48-2",
+      "propertyId": "p48",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 950,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p48-3",
+      "propertyId": "p48",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 950,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p48-4",
+      "propertyId": "p48",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 950,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p49-1",
+      "propertyId": "p49",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1050,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p49-2",
+      "propertyId": "p49",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1050,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p49-3",
+      "propertyId": "p49",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1050,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p49-4",
+      "propertyId": "p49",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1050,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p50-1",
+      "propertyId": "p50",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1150,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p50-2",
+      "propertyId": "p50",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1150,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p50-3",
+      "propertyId": "p50",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1150,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p50-4",
+      "propertyId": "p50",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1150,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p51-1",
+      "propertyId": "p51",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1250,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p51-2",
+      "propertyId": "p51",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1250,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p51-3",
+      "propertyId": "p51",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1250,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p51-4",
+      "propertyId": "p51",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1250,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p52-1",
+      "propertyId": "p52",
+      "label": "Комната А · место 1",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1350,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p52-2",
+      "propertyId": "p52",
+      "label": "Комната А · место 2",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1350,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p52-3",
+      "propertyId": "p52",
+      "label": "Комната А · место 3",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1350,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p52-4",
+      "propertyId": "p52",
+      "label": "Комната А · место 4",
+      "kind": "bed",
+      "capacity": 1,
+      "baseNightly": 1350,
+      "cleaningFee": 0
+    },
+    {
+      "id": "p53-1",
+      "propertyId": "p53",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 7200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p53-2",
+      "propertyId": "p53",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 8400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p53-3",
+      "propertyId": "p53",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 10000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p54-1",
+      "propertyId": "p54",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 3200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p54-2",
+      "propertyId": "p54",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 4400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p54-3",
+      "propertyId": "p54",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 6000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p55-1",
+      "propertyId": "p55",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 7200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p55-2",
+      "propertyId": "p55",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 8400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p55-3",
+      "propertyId": "p55",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 10000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p56-1",
+      "propertyId": "p56",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 3200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p56-2",
+      "propertyId": "p56",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 4400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p56-3",
+      "propertyId": "p56",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 6000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p57-1",
+      "propertyId": "p57",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 7200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p57-2",
+      "propertyId": "p57",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 8400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p57-3",
+      "propertyId": "p57",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 10000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p58-1",
+      "propertyId": "p58",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 3200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p58-2",
+      "propertyId": "p58",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 4400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p58-3",
+      "propertyId": "p58",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 6000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p59-1",
+      "propertyId": "p59",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 7200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p59-2",
+      "propertyId": "p59",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 8400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p59-3",
+      "propertyId": "p59",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 10000,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p60-1",
+      "propertyId": "p60",
+      "label": "№1 · Двухместный",
+      "kind": "room",
+      "capacity": 2,
+      "baseNightly": 3200,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p60-2",
+      "propertyId": "p60",
+      "label": "№2 · Трёхместный",
+      "kind": "room",
+      "capacity": 3,
+      "baseNightly": 4400,
+      "cleaningFee": 500
+    },
+    {
+      "id": "p60-3",
+      "propertyId": "p60",
+      "label": "№3 · Семейный",
+      "kind": "room",
+      "capacity": 4,
+      "baseNightly": 6000,
+      "cleaningFee": 500
+    }
+  ],
+  "bookings": [
+    {
+      "id": "b1",
+      "unitId": "p2-101",
+      "guestId": "guest1",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 1,
+      "nightlySnapshot": 3800,
+      "cleaningSnapshot": 0,
+      "total": 19000
+    },
+    {
+      "id": "b2",
+      "unitId": "p2-201",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 1,
+      "nightlySnapshot": 5600,
+      "cleaningSnapshot": 0,
+      "total": 22400
+    },
+    {
+      "id": "b3",
+      "unitId": "p2-203",
+      "guestId": "guest2",
+      "checkIn": "2027-06-11",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 4000,
+      "cleaningSnapshot": 0,
+      "total": 12000
+    },
+    {
+      "id": "b4",
+      "unitId": "p2-301",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-13",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 5800,
+      "cleaningSnapshot": 0,
+      "total": 17400
+    },
+    {
+      "id": "b5",
+      "unitId": "p2-302",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-15",
+      "status": "pending_host",
+      "guests": 1,
+      "nightlySnapshot": 4200,
+      "cleaningSnapshot": 0,
+      "total": 12600
+    },
+    {
+      "id": "b6",
+      "unitId": "p1-whole",
+      "guestId": "guest2",
+      "checkIn": "2027-06-18",
+      "checkOut": "2027-06-21",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 4200,
+      "cleaningSnapshot": 0,
+      "total": 12600
+    },
+    {
+      "id": "b7",
+      "unitId": "p7-whole",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "cancelled",
+      "guests": 1,
+      "nightlySnapshot": 2900,
+      "cleaningSnapshot": 700,
+      "total": 12300
+    },
+    {
+      "id": "b8",
+      "unitId": "p4-bed1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 1200,
+      "cleaningSnapshot": 0,
+      "total": 2400
+    },
+    {
+      "id": "b9",
+      "unitId": "p6-whole",
+      "guestId": "guest1",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 5600,
+      "cleaningSnapshot": 700,
+      "total": 23100
+    },
+    {
+      "id": "b10",
+      "unitId": "p1-whole",
+      "guestId": "guest1",
+      "checkIn": "2027-06-24",
+      "checkOut": "2027-06-27",
+      "status": "pending_host",
+      "guests": 2,
+      "nightlySnapshot": 4200,
+      "cleaningSnapshot": 0,
+      "total": 12600
+    },
+    {
+      "id": "b11",
+      "unitId": "p2-102",
+      "guestId": "guest1",
+      "checkIn": "2027-06-21",
+      "checkOut": "2027-06-24",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 3800,
+      "cleaningSnapshot": 0,
+      "total": 11400
+    },
+    {
+      "id": "b12",
+      "unitId": "p1-whole",
+      "guestId": "guest1",
+      "checkIn": "2027-06-02",
+      "checkOut": "2027-06-05",
+      "status": "completed",
+      "guests": 2,
+      "nightlySnapshot": 4200,
+      "cleaningSnapshot": 0,
+      "total": 12600,
+      "source": "manual"
+    },
+    {
+      "id": "b13",
+      "unitId": "p1-whole",
+      "guestId": "guest1",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "cancelled",
+      "guests": 2,
+      "nightlySnapshot": 4200,
+      "cleaningSnapshot": 0,
+      "total": 16800
+    },
+    {
+      "id": "b14",
+      "unitId": "p9-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "confirmed",
+      "guests": 2,
+      "nightlySnapshot": 1800,
+      "cleaningSnapshot": 500,
+      "total": 9500
+    },
+    {
+      "id": "b15",
+      "unitId": "p10-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "cancelled",
+      "guests": 2,
+      "nightlySnapshot": 2300,
+      "cleaningSnapshot": 500,
+      "total": 12000
+    },
+    {
+      "id": "b16",
+      "unitId": "p15-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "cancelled",
+      "guests": 2,
+      "nightlySnapshot": 1800,
+      "cleaningSnapshot": 500,
+      "total": 9500
+    },
+    {
+      "id": "b17",
+      "unitId": "p16-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "cancelled",
+      "guests": 2,
+      "nightlySnapshot": 2300,
+      "cleaningSnapshot": 500,
+      "total": 12000
+    },
+    {
+      "id": "b18",
+      "unitId": "p21-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "confirmed",
+      "guests": 2,
+      "nightlySnapshot": 1800,
+      "cleaningSnapshot": 500,
+      "total": 9500
+    },
+    {
+      "id": "b19",
+      "unitId": "p22-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "cancelled",
+      "guests": 2,
+      "nightlySnapshot": 2300,
+      "cleaningSnapshot": 500,
+      "total": 12000
+    },
+    {
+      "id": "b20",
+      "unitId": "p27-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "cancelled",
+      "guests": 2,
+      "nightlySnapshot": 1800,
+      "cleaningSnapshot": 500,
+      "total": 9500
+    },
+    {
+      "id": "b21",
+      "unitId": "p28-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-17",
+      "status": "cancelled",
+      "guests": 2,
+      "nightlySnapshot": 2300,
+      "cleaningSnapshot": 500,
+      "total": 12000
+    },
+    {
+      "id": "b22",
+      "unitId": "p45-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 650,
+      "cleaningSnapshot": 0,
+      "total": 1300
+    },
+    {
+      "id": "b23",
+      "unitId": "p46-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 750,
+      "cleaningSnapshot": 0,
+      "total": 1500
+    },
+    {
+      "id": "b24",
+      "unitId": "p47-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 850,
+      "cleaningSnapshot": 0,
+      "total": 1700
+    },
+    {
+      "id": "b25",
+      "unitId": "p48-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 950,
+      "cleaningSnapshot": 0,
+      "total": 1900
+    },
+    {
+      "id": "b26",
+      "unitId": "p49-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 1050,
+      "cleaningSnapshot": 0,
+      "total": 2100
+    },
+    {
+      "id": "b27",
+      "unitId": "p50-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 1150,
+      "cleaningSnapshot": 0,
+      "total": 2300
+    },
+    {
+      "id": "b28",
+      "unitId": "p51-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 1250,
+      "cleaningSnapshot": 0,
+      "total": 2500
+    },
+    {
+      "id": "b29",
+      "unitId": "p52-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-14",
+      "status": "confirmed",
+      "guests": 1,
+      "nightlySnapshot": 1350,
+      "cleaningSnapshot": 0,
+      "total": 2700
+    },
+    {
+      "id": "b30",
+      "unitId": "p53-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 7200,
+      "cleaningSnapshot": 500,
+      "total": 36500
+    },
+    {
+      "id": "b31",
+      "unitId": "p53-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 8400,
+      "cleaningSnapshot": 500,
+      "total": 34100
+    },
+    {
+      "id": "b32",
+      "unitId": "p54-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 3200,
+      "cleaningSnapshot": 500,
+      "total": 16500
+    },
+    {
+      "id": "b33",
+      "unitId": "p54-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 4400,
+      "cleaningSnapshot": 500,
+      "total": 18100
+    },
+    {
+      "id": "b34",
+      "unitId": "p55-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 7200,
+      "cleaningSnapshot": 500,
+      "total": 36500
+    },
+    {
+      "id": "b35",
+      "unitId": "p55-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 8400,
+      "cleaningSnapshot": 500,
+      "total": 34100
+    },
+    {
+      "id": "b36",
+      "unitId": "p56-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 3200,
+      "cleaningSnapshot": 500,
+      "total": 16500
+    },
+    {
+      "id": "b37",
+      "unitId": "p56-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 4400,
+      "cleaningSnapshot": 500,
+      "total": 18100
+    },
+    {
+      "id": "b38",
+      "unitId": "p57-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 7200,
+      "cleaningSnapshot": 500,
+      "total": 36500
+    },
+    {
+      "id": "b39",
+      "unitId": "p57-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 8400,
+      "cleaningSnapshot": 500,
+      "total": 34100
+    },
+    {
+      "id": "b40",
+      "unitId": "p58-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 3200,
+      "cleaningSnapshot": 500,
+      "total": 16500
+    },
+    {
+      "id": "b41",
+      "unitId": "p58-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 4400,
+      "cleaningSnapshot": 500,
+      "total": 18100
+    },
+    {
+      "id": "b42",
+      "unitId": "p59-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 7200,
+      "cleaningSnapshot": 500,
+      "total": 36500
+    },
+    {
+      "id": "b43",
+      "unitId": "p59-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 8400,
+      "cleaningSnapshot": 500,
+      "total": 34100
+    },
+    {
+      "id": "b44",
+      "unitId": "p60-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-10",
+      "checkOut": "2027-06-15",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 3200,
+      "cleaningSnapshot": 500,
+      "total": 16500
+    },
+    {
+      "id": "b45",
+      "unitId": "p60-2",
+      "guestId": "guest2",
+      "checkIn": "2027-06-12",
+      "checkOut": "2027-06-16",
+      "status": "paid",
+      "guests": 2,
+      "nightlySnapshot": 4400,
+      "cleaningSnapshot": 500,
+      "total": 18100
+    },
+    {
+      "id": "b46",
+      "unitId": "p33-1",
+      "guestId": "guest1",
+      "checkIn": "2027-07-15",
+      "checkOut": "2027-08-14",
+      "status": "confirmed",
+      "guests": 2,
+      "nightlySnapshot": 0,
+      "cleaningSnapshot": 0,
+      "total": 28000,
+      "monthlySnapshot": 28000
+    },
+    {
+      "id": "b47",
+      "unitId": "p34-1",
+      "guestId": "guest2",
+      "checkIn": "2027-06-01",
+      "checkOut": "2027-07-01",
+      "status": "checked_in",
+      "guests": 2,
+      "nightlySnapshot": 0,
+      "cleaningSnapshot": 0,
+      "total": 32000,
+      "monthlySnapshot": 32000
+    }
+  ],
+  "blocks": [
+    {
+      "id": "block1",
+      "unitId": "p2-202",
+      "start": "2027-06-11",
+      "end": "2027-06-20",
+      "reason": "Ремонт"
+    }
+  ],
+  "favorites": [
+    "p1",
+    "p6"
+  ]
+}
