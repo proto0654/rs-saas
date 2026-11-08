@@ -2,13 +2,17 @@
 import seed from '../../demo/seed.json'
 import { brandName, serviceArea } from '#shared/brand'
 import { locations, regionLabels, propertyRegion } from '#shared/locations'
-import { available, quote, search, nights } from '#shared/domain/booking'
+import { available, quote, search, nights, day } from '#shared/domain/booking'
 import { addDays } from '#shared/domain/dates'
 import { bookingStatusLabels as statuses } from '../utils/booking-labels'
 
 const route = useRoute()
 const router = useRouter()
 const store = useDemoStore()
+// Restore private demo data only after this async screen has hydrated.
+const screenMounted = ref(false)
+onMounted(() => { screenMounted.value = true })
+const demoReady = computed(() => screenMounted.value && store.ready)
 const { path, isTg, isHost, link } = usePlatform()
 const cities = Object.fromEntries(locations.map(location => [location.slug, location.city]))
 const labels = { apartment: 'Квартира', hotel: 'Мини-отель', hostel: 'Хостел', house: 'Дом' }
@@ -36,7 +40,7 @@ const initialFilters = () => {
   try { if (f.rentalMode === 'long_term' && !q.checkOut) f.checkOut = addDays(f.checkIn, 30); search(seed, f); return f } catch { return structuredClone(seed.defaultSearch) }
 }
 const filters = ref(initialFilters())
-const db = computed(() => store.ready ? store.data.db : seed)
+const db = computed(() => demoReady.value ? store.data.db : seed)
 const { data: publicData } = await useAsyncData(`public:${route.fullPath}`, () => {
   if (isSearch.value) return { results: search(seed, initialFilters()) }
   if (path.value.startsWith('/stays/')) {
@@ -45,13 +49,13 @@ const { data: publicData } = await useAsyncData(`public:${route.fullPath}`, () =
   }
   return {}
 })
-if (path.value.startsWith('/stays/') && !publicData.value?.property && !store.ready) throw createError({ statusCode: 404, statusMessage: 'Объект не найден' })
+if (path.value.startsWith('/stays/') && !publicData.value?.property && !demoReady.value) throw createError({ statusCode: 404, statusMessage: 'Объект не найден' })
 const property = computed(() => db.value.properties.find(x => x.id === id.value && (isHost.value ? x.ownerId === 'host1' : x.status === 'published')))
 const currentUnit = computed(() => db.value.units.find(x => x.id === id.value))
 const unitProperty = computed(() => currentUnit.value && db.value.properties.find(x => x.id === currentUnit.value.propertyId))
-watch([() => route.path, () => store.ready], () => {
+watch([() => route.path, () => demoReady.value], () => {
   if (!validRoute.value || (path.value.startsWith('/locations/') && !cities[id.value])) { showError({ statusCode: 404, message: 'Страница не найдена' }); return }
-  if (!store.ready) return
+  if (!demoReady.value) return
   const invalidProperty = (path.value.startsWith('/stays/') || /^\/host\/properties\/[^/]+$/.test(path.value)) && !property.value
   const invalidUnit = path.value.startsWith('/checkout/') && (!currentUnit.value || unitProperty.value?.status !== 'published')
   if (invalidProperty || invalidUnit) showError({ statusCode: 404, message: 'Объект не найден' })
@@ -60,8 +64,34 @@ const results = computed(() => { try { return search(db.value, filters.value) } 
 const error = ref('')
 const mapMode = toRef(store, 'mapMode')
 const selected = toRef(store, 'selectedPropertyId')
-const showFilters = ref(false)
-const showDates = ref(false)
+const searchPanel = ref('')
+const draft = ref(null)
+const searchPanelElement = ref(null)
+const resultHeading = ref(null)
+const priceField = ref(null)
+const invalidField = ref('')
+const showFilters = computed(() => searchPanel.value === 'filters')
+const showDates = computed(() => searchPanel.value === 'dates')
+const previousDates = useState('guest-previous-dates', () => null)
+const modeFilters = useState('guest-mode-filters', () => ({}))
+const amenityLabels = { sea_view: 'Вид на море', terrace: 'Терраса', kitchen: 'Кухня', parking: 'Парковка', air_conditioning: 'Кондиционер', washer: 'Стиральная машина', wifi: 'Wi-Fi' }
+const destinationLabel = computed(() => filters.value.city || regionLabels[filters.value.region] || 'Куда едем?')
+const amenityOptions = computed(() => {
+  const properties = db.value.properties.filter(p => p.status === 'published' && (p.rentalMode || 'short_term') === filters.value.rentalMode)
+  return Object.entries(amenityLabels).filter(([key]) => draft.value?.amenities?.includes(key) || properties.some(p => p.amenities.includes(key)) && !properties.every(p => p.amenities.includes(key)))
+})
+const draftCount = computed(() => { try { return search(db.value, normalizeFilters(draft.value || filters.value)).length } catch { return null } })
+const resultActionLabel = computed(() => {
+  if (draftCount.value === null) return 'Применить'
+  const noun = { one: 'вариант', few: 'варианта', many: 'вариантов', other: 'варианта' }[new Intl.PluralRules('ru').select(draftCount.value)]
+  return `Показать ${draftCount.value} ${noun}`
+})
+const activeTags = computed(() => [
+  ...(filters.value.maxPrice == null ? [] : [{ key: 'maxPrice', label: `До ${format(filters.value.maxPrice)} ₽/${filters.value.rentalMode === 'long_term' ? 'мес' : 'ночь'}` }]),
+  ...(filters.value.type ? [{ key: 'type', label: labels[filters.value.type] }] : []),
+  ...(filters.value.amenities || []).map(key => ({ key, label: amenityLabels[key] || key })),
+  ...(filters.value.videoVerified ? [{ key: 'videoVerified', label: 'Видео проверено' }] : [])
+])
 const selectedUnit = ref(null)
 const hostTab = ref('units')
 const hostType = ref('all')
@@ -70,7 +100,7 @@ const clockDate = ref(seed.demoToday)
 const hostDay = ref(seed.demoToday)
 const photoIndex = ref(0)
 watch(() => db.value.demoToday, value => { clockDate.value = value; calendarStart.value = value; hostDay.value = value }, { immediate: true })
-const isNow = computed(() => filters.value.checkIn === db.value.demoToday && filters.value.checkOut === addDays(db.value.demoToday, 1))
+const isNow = computed(() => filters.value.rentalMode !== 'long_term' && filters.value.checkIn === db.value.demoToday && filters.value.checkOut === addDays(db.value.demoToday, 1))
 function setClock() { try { store.setClock(clockDate.value); error.value = '' } catch { error.value = 'Укажите корректную демо-дату' } }
 const scenario = toRef(store, 'scenario')
 function simulateLoading() { scenario.value = 'loading'; setTimeout(() => { scenario.value = 'normal' }, 1500) }
@@ -88,10 +118,10 @@ const blockEnd = ref('2027-06-13')
 const blockPanel = ref(null)
 function selectFreeDate(unitId, day) { blockUnit.value = unitId; blockStart.value = day; blockEnd.value = nextDay(day); blockPanel.value?.scrollIntoView({ block: 'center' }) }
 const newProperty = reactive({ title: '', city: '', description: '', type: 'apartment', rentalMode: 'short_term', region: 'crimea' })
-const sourceFilters = computed(() => store.ready && store.data.filters ? store.data.filters : seed.defaultSearch)
-watch(() => store.ready, ready => {
+const sourceFilters = computed(() => demoReady.value && store.data.filters ? store.data.filters : seed.defaultSearch)
+watch([() => demoReady.value, sourceFilters], ([ready]) => {
   if (!ready || Object.keys(route.query).length || path.value.startsWith('/locations/')) return
-  const restored = structuredClone(JSON.parse(JSON.stringify(sourceFilters.value)))
+  const restored = normalizeFilters(sourceFilters.value)
   const target = path.value.startsWith('/stays/') && db.value.properties.find(property => property.id === id.value)
   if (target?.rentalMode === 'long_term') {
     if (restored.rentalMode !== 'long_term') { restored.maxPrice = null; restored.amenities = [] }
@@ -105,8 +135,8 @@ function selectMapProperty(id) { selected.value = id }
 watch(() => route.fullPath, () => { error.value = ''; selectedUnit.value = null; photoIndex.value = 0; if (isSearch.value && Object.keys(route.query).length) filters.value = initialFilters() })
 const chosen = computed(() => results.value.find(x => x.id === selected.value))
 const units = computed(() => property.value ? db.value.units.filter(x => x.propertyId === property.value.id) : [])
-const availableUnits = computed(() => units.value.filter(u => { try { return u.capacity >= filters.value.guests && available(db.value, u.id, filters.value.checkIn, filters.value.checkOut) && quote(u, filters.value.checkIn, filters.value.checkOut) } catch { return false } }))
-const activeCount = computed(() => [filters.value.maxPrice != null, !!filters.value.city, !!filters.value.region, !!filters.value.type, !!filters.value.videoVerified, !!filters.value.amenities?.length].filter(Boolean).length)
+const availableUnits = computed(() => units.value.filter(u => { try { return u.capacity >= filters.value.guests && (filters.value.maxPrice == null || unitRate(u) <= filters.value.maxPrice) && available(db.value, u.id, filters.value.checkIn, filters.value.checkOut) && quote(u, filters.value.checkIn, filters.value.checkOut) } catch { return false } }))
+const activeCount = computed(() => activeTags.value.length)
 const unitRate = unit => unit.baseMonthly ?? unit.baseNightly
 const periodLabel = property => property?.rentalMode === 'long_term' ? 'месяц' : 'ночь'
 const format = n => new Intl.NumberFormat('ru-RU').format(n || 0)
@@ -133,14 +163,90 @@ function unitAvailability(unit) {
   return { label: `Занят до ${date(booking.checkOut)}`, kind: 'booked' }
 }
 const query = () => ({ rentalMode: filters.value.rentalMode || 'short_term', region: filters.value.region || '', checkIn: filters.value.checkIn, checkOut: filters.value.checkOut, guests: String(filters.value.guests), maxPrice: filters.value.maxPrice == null ? '' : String(filters.value.maxPrice), city: filters.value.city || '', amenities: (filters.value.amenities || []).join(','), type: filters.value.type || '', videoVerified: filters.value.videoVerified ? '1' : '0' })
-function applyFilters() {
-  if (!store.ready) return
-  if (filters.value.maxPrice === '') filters.value.maxPrice = null
-  try { search(db.value, filters.value); error.value = ''; store.setFilters(filters.value); showFilters.value = false; showDates.value = false; router.replace({ path: path.value.startsWith('/stays/') ? route.path : link('/search'), query: query() }) } catch { error.value = filters.value.rentalMode === 'long_term' ? 'Для долгосрока выберите от 30 ночей и проверьте цену за месяц' : 'Проверьте даты, количество гостей и цену' }
+function normalizeFilters(value) {
+  return { ...clone(value), rentalMode: value.rentalMode || 'short_term', amenities: [...(value.amenities || [])], region: value.region || null, city: value.city || null, type: value.type || '', maxPrice: value.maxPrice === '' || value.maxPrice == null ? null : value.maxPrice }
 }
-function changeRentalMode() { filters.value.maxPrice = null; filters.value.amenities = []; filters.value.type = ''; filters.value.videoVerified = false; filters.value.checkOut = addDays(filters.value.checkIn, filters.value.rentalMode === 'long_term' ? 30 : 4); applyFilters() }
-function clearFilters() { const mode = filters.value.rentalMode || 'short_term'; filters.value = { checkIn: '2027-06-12', checkOut: '2027-06-16', guests: 2, rentalMode: filters.value.rentalMode || 'short_term', region: null, maxPrice: null, city: null, amenities: [], type: '', videoVerified: false }; if (mode === 'long_term') filters.value.checkOut = addDays(filters.value.checkIn, 30); applyFilters() }
-function now() { filters.value.rentalMode = 'short_term'; filters.value.checkIn = db.value.demoToday; filters.value.checkOut = addDays(db.value.demoToday, 1); applyFilters() }
+function revealElement(element, focus = false) {
+  if (!element || typeof window === 'undefined') return
+  const bounds = element.getBoundingClientRect()
+  if (bounds.top < 0 || bounds.bottom > window.innerHeight - 90) element.scrollIntoView?.({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
+  if (focus) element.focus({ preventScroll: true })
+}
+async function openSearchPanel(panel, focusPrice = false) {
+  if (searchPanel.value === panel && !focusPrice) { closeSearchPanel(); return }
+  if (searchPanel.value !== panel) draft.value = normalizeFilters(filters.value)
+  error.value = ''; invalidField.value = ''; searchPanel.value = panel
+  await nextTick()
+  revealElement(searchPanelElement.value)
+  if (focusPrice) priceField.value?.focus({ preventScroll: true })
+}
+function closeSearchPanel() {
+  const panel = searchPanel.value
+  searchPanel.value = ''; draft.value = null; error.value = ''; invalidField.value = ''
+  if (typeof document !== 'undefined') document.querySelector(`[data-search-panel="${panel}"]`)?.focus({ preventScroll: true })
+}
+function validateSearch(value) {
+  invalidField.value = 'checkIn'
+  day(value.checkIn)
+  invalidField.value = 'checkOut'
+  const count = nights(value.checkIn, value.checkOut)
+  if (value.rentalMode === 'long_term' && count < 30) throw new Error('Minimum 30 nights')
+  invalidField.value = 'guests'
+  if (!Number.isInteger(value.guests) || value.guests < 1 || value.guests > 20) throw new Error('Invalid guests')
+  invalidField.value = 'maxPrice'
+  search(db.value, value)
+  invalidField.value = ''
+}
+async function commitFilters(value, reveal = true) {
+  if (!demoReady.value) return false
+  const proposed = normalizeFilters(value)
+  try { validateSearch(proposed) } catch {
+    error.value = { checkIn: 'Укажите корректную дату заезда', checkOut: proposed.rentalMode === 'long_term' ? 'Выберите выезд не раньше чем через 30 ночей после заезда' : 'Выезд должен быть позже заезда', guests: 'Укажите от 1 до 20 гостей', maxPrice: 'Укажите целую неотрицательную цену или оставьте поле пустым' }[invalidField.value]
+    await nextTick()
+    const field = searchPanelElement.value?.querySelector(`[name="${invalidField.value}"]`)
+    revealElement(field, true)
+    return false
+  }
+  store.setFilters(proposed)
+  filters.value = proposed
+  closeSearchPanel()
+  await router.replace({ path: path.value.startsWith('/stays/') ? route.path : link('/search'), query: query() })
+  await nextTick()
+  if (reveal) revealElement(isSearch.value ? resultHeading.value : document.getElementById('booking-options'), true)
+  return true
+}
+function applyFilters() { return commitFilters(draft.value || filters.value) }
+function changeRentalMode(mode) {
+  if (mode === filters.value.rentalMode) return
+  modeFilters.value[filters.value.rentalMode] = normalizeFilters(filters.value)
+  const saved = modeFilters.value[mode]
+  const next = saved ? { ...saved, region: filters.value.region, city: filters.value.city, guests: filters.value.guests } : { ...normalizeFilters(filters.value), rentalMode: mode, maxPrice: null, checkOut: addDays(filters.value.checkIn, mode === 'long_term' ? 30 : 4), amenities: (filters.value.amenities || []).filter(key => db.value.properties.some(p => (p.rentalMode || 'short_term') === mode && p.amenities.includes(key))) }
+  previousDates.value = null
+  return commitFilters(next, false)
+}
+function withoutRestrictions(value) { return { ...normalizeFilters(value), maxPrice: null, amenities: [], type: '', videoVerified: false } }
+function clearFilters() { return commitFilters(withoutRestrictions(filters.value)) }
+function resetDraft() { draft.value = withoutRestrictions(draft.value); error.value = ''; invalidField.value = '' }
+function removeTag(key) {
+  const next = normalizeFilters(filters.value)
+  if (key === 'maxPrice') next.maxPrice = null
+  else if (key === 'type') next.type = ''
+  else if (key === 'videoVerified') next.videoVerified = false
+  else next.amenities = next.amenities.filter(amenity => amenity !== key)
+  return commitFilters(next, false)
+}
+function toggleQuickAmenity(key) {
+  const next = normalizeFilters(filters.value)
+  next.amenities = next.amenities.includes(key) ? next.amenities.filter(amenity => amenity !== key) : [...next.amenities, key]
+  return commitFilters(next, false)
+}
+function now() {
+  if (filters.value.rentalMode === 'long_term') return
+  const next = normalizeFilters(filters.value)
+  if (isNow.value) Object.assign(next, previousDates.value || { checkIn: seed.defaultSearch.checkIn, checkOut: seed.defaultSearch.checkOut })
+  else { previousDates.value = { checkIn: next.checkIn, checkOut: next.checkOut }; next.checkIn = db.value.demoToday; next.checkOut = addDays(db.value.demoToday, 1) }
+  return commitFilters(next, false)
+}
 function cycleResult(step) { const index = results.value.findIndex(item => item.id === selected.value); selected.value = results.value[(index + step + results.value.length) % results.value.length]?.id || null }
 function goStay(p) { router.push({ path: link(`/stays/${p.id}`), query: query() }) }
 function goCheckout(u) { store.setFilters(filters.value); router.push(link(`/checkout/${u.id}`)) }
@@ -150,7 +256,6 @@ function book() {
 const actionError = error => error.message === 'Minimum 30 nights' ? 'Долгосрочная аренда доступна от 30 ночей' : ['Invalid date','Invalid range'].includes(error.message) ? 'Проверьте даты: выезд должен быть позже заезда' : error.message
 function addManualBooking() { try { store.addManualBooking(manualBooking); showManualBooking.value = false; error.value = '' } catch (e) { error.value = actionError(e) } }
 function transition(b, status, role) { try { store.transition(b.id, status, role); error.value = '' } catch (e) { error.value = e.message } }
-function toggleAmenity(a) { const list = filters.value.amenities || []; filters.value.amenities = list.includes(a) ? list.filter(x => x !== a) : [...list, a] }
 function saveProperty() { try { store.saveProperty(editor.value); editor.value = null; error.value = '' } catch (e) { error.value = e.message } }
 function createProperty() { try { const result = store.addProperty(newProperty); showNew.value = false; router.push(link(`/host/properties/${result}`)) } catch (e) { error.value = e.message } }
 function saveUnit() { try { store.saveUnit(unitEditor.value); unitEditor.value = null; error.value = '' } catch (e) { error.value = e.message } }
@@ -170,30 +275,53 @@ function hostSummary(property) {
 const userBookings = computed(() => db.value.bookings.filter(b => b.guestId === 'guest1').slice().sort((a,b) => Number(['cancelled','completed'].includes(a.status)) - Number(['cancelled','completed'].includes(b.status)) || a.checkIn.localeCompare(b.checkIn)))
 const bookingInfo = b => { const unit = db.value.units.find(x => x.id === b.unitId); return { unit, property: db.value.properties.find(p => p.id === unit?.propertyId) } }
 const favorites = computed(() => db.value.properties.filter(p => p.status === 'published' && store.data?.favorites.includes(p.id)))
-const isFavorite = p => store.data?.favorites.includes(p.id)
+const isFavorite = p => demoReady.value && store.data?.favorites.includes(p.id)
 const name = computed(() => property.value?.title || 'Жильё на юге')
 useSeoMeta({ title: () => `${name.value} · ${brandName}`, description: () => property.value?.description || `Аренда жилья: ${serviceArea}` })
 useHead(() => ({ link: [{ rel: 'canonical', href: route.path }] }))
 useHead(() => isTg.value ? { script: [{ src: 'https://telegram.org/js/telegram-web-app.js', onload: () => window.dispatchEvent(new Event('telegram-web-app-ready')) }] } : {})
-const modalOpen = computed(() => showFilters.value || showDates.value || !!editor.value || !!unitEditor.value || showNew.value || showManualBooking.value)
-const sheetTitle = computed(() => showDates.value ? 'Даты и гости' : showFilters.value ? 'Фильтры' : editor.value ? 'Редактировать объект' : unitEditor.value ? 'Единица размещения' : showManualBooking.value ? 'Добавить бронь' : 'Новый объект')
-function closeSheet() { showFilters.value = false; showDates.value = false; editor.value = null; unitEditor.value = null; showNew.value = false; showManualBooking.value = false }
+const modalOpen = computed(() => !!editor.value || !!unitEditor.value || showNew.value || showManualBooking.value)
+const sheetTitle = computed(() => editor.value ? 'Редактировать объект' : unitEditor.value ? 'Единица размещения' : showManualBooking.value ? 'Добавить бронь' : 'Новый объект')
+function closeSheet() { editor.value = null; unitEditor.value = null; showNew.value = false; showManualBooking.value = false }
 </script>
 
 <template>
 <div class="screen-content">
-  <div v-if="store.restoreWarning" class="notice">Сохранённые демо-данные повреждены или устарели. Восстановлены исходные примеры.</div><div v-if="store.storageWarning" class="notice">Не удалось сохранить данные браузера: изменения доступны только до перезагрузки.</div>
+  <div v-if="demoReady && store.restoreWarning" class="notice">Сохранённые демо-данные повреждены или устарели. Восстановлены исходные примеры.</div><div v-if="demoReady && store.storageWarning" class="notice">Не удалось сохранить данные браузера: изменения доступны только до перезагрузки.</div>
   <main v-if="isSearch" class="search-page">
     <div class="search-heading"><div><div class="eyebrow">{{ serviceArea }} · ДЕМО</div><h1>Найдите своё <em>место</em></h1><p>Квартиры, дома и комнаты для поездок и жизни</p></div><div class="heading-note">Ваша следующая<br>история начинается здесь <span>↗</span></div></div>
-    <div class="rental-tabs"><button :class="{active: filters.rentalMode !== 'long_term'}" @click="filters.rentalMode = 'short_term'; changeRentalMode()">Посуточно</button><button :class="{active: filters.rentalMode === 'long_term'}" @click="filters.rentalMode = 'long_term'; changeRentalMode()">Долгосрок · от 30 ночей</button></div>
-    <div class="search-controls"><button class="search-trigger" @click="showDates = true"><span>▦</span><span><small>КОГДА И КТО</small><b>{{ dateRange }} · {{ filters.guests }} гост.</b></span><span class="arrow disclosure-chevron" aria-hidden="true"></span></button><button class="btn primary" @click="showFilters = true">☷ &nbsp; Фильтры <span v-if="activeCount">· {{ activeCount }}</span></button><button class="chip desktop-chip" :class="{selected: filters.maxPrice != null}" @click="showFilters = true">{{ filters.maxPrice != null ? `До ${format(filters.maxPrice)} ₽${filters.rentalMode === 'long_term' ? '/мес' : ''}` : 'Любая цена' }}</button><button class="chip desktop-chip" :class="{selected: filters.amenities?.includes('sea_view')}" @click="toggleAmenity('sea_view'); applyFilters()">Вид на море</button><button class="chip desktop-chip" :class="{selected: isNow}" :aria-pressed="isNow" @click="now">Свободно сейчас</button></div>
-    <div v-if="store.ready && filters.rentalMode === 'long_term' && !db.properties.some(p => p.rentalMode === 'long_term' && p.status === 'published')" class="notice">В сохранённом демо пока нет объектов долгосрочной аренды. Чтобы загрузить новые примеры, откройте <NuxtLink :to="link('/profile')">профиль и сбросьте демо</NuxtLink>. Текущие изменения демо будут удалены.</div>
-    <div class="results-heading"><div><span class="eyebrow">ПОДБОРКА ДЛЯ ВАС</span><h2>Жильё для вас <span>{{ results.length }}</span></h2></div><div class="view-switch"><button :class="{active: mapMode}" @click="mapMode = true">⌖ Карта</button><button :class="{active: !mapMode}" @click="mapMode = false">☰ Список</button></div></div>
-    <div v-if="scenario === 'loading'" class="empty">Загружаем варианты…</div><div v-else-if="scenario === 'error'" class="empty"><b>Не удалось загрузить варианты</b><p>Это демонстрация ошибки соединения.</p><button class="btn primary" @click="scenario = 'normal'">Попробовать ещё раз</button></div><div v-else class="results-layout"><div class="result-list" :class="{ 'mobile-hidden': mapMode }"><div v-if="!results.length" class="empty"><b>Ничего не нашлось</b><p>Попробуйте изменить даты или фильтры</p><button class="btn outline" @click="clearFilters">Сбросить фильтры</button></div><article v-for="p in results" :key="p.id" class="property-card" role="link" tabindex="0" :aria-label="p.title" @click="goStay(p)" @keydown.enter.self="goStay(p)" @keydown.space.self.prevent="goStay(p)"><div class="card-image"><img :src="photo(p)" :alt="p.title"><span class="image-tag">{{ labels[p.type] }}</span><button class="heart" :disabled="!store.ready" :aria-label="isFavorite(p) ? 'Убрать из избранного' : 'В избранное'" @click.stop="store.toggleFavorite(p.id)">{{ isFavorite(p) ? '♥' : '♡' }}</button></div><div class="card-content"><div class="card-top"><span class="eyebrow">{{ p.city }} · {{ regionLabels[propertyRegion(p)] || 'Юг России' }}</span><span>★ {{ p.rating }}</span></div><h3>{{ p.title }}</h3><p>{{ p.description }}</p><div v-if="p.videoVerified" class="verified">▣ Видео проверено</div><div class="card-bottom"><span><b>{{ format(p.priceFrom) }} ₽</b> / {{ periodLabel(p) }}</span><span class="circle">↗</span></div></div></article></div>
+    <div class="rental-tabs"><button :class="{active: filters.rentalMode !== 'long_term'}" @click="changeRentalMode('short_term')">Посуточно</button><button :class="{active: filters.rentalMode === 'long_term'}" @click="changeRentalMode('long_term')">Долгосрок · от 30 ночей</button></div>
+    <div class="search-controls">
+      <button class="search-trigger destination-trigger" data-search-panel="destination" :aria-expanded="searchPanel === 'destination'" aria-controls="search-editor" @click="openSearchPanel('destination')"><span>⌖</span><span><small>НАПРАВЛЕНИЕ</small><b>{{ destinationLabel }}</b></span><span class="arrow disclosure-chevron" aria-hidden="true"></span></button>
+      <button class="search-trigger" data-search-panel="dates" :aria-expanded="showDates" aria-controls="search-editor" @click="openSearchPanel('dates')"><span>▦</span><span><small>ДАТЫ И ГОСТИ</small><b>{{ dateRange }} · {{ filters.guests }} гост.</b></span><span class="arrow disclosure-chevron" aria-hidden="true"></span></button>
+      <div class="quick-filters">
+        <button class="chip" :class="{selected: filters.maxPrice != null}" @click="openSearchPanel('filters', true)">{{ filters.maxPrice != null ? `До ${format(filters.maxPrice)} ₽${filters.rentalMode === 'long_term' ? '/мес' : '/ночь'}` : 'Цена' }}</button>
+        <button v-if="filters.rentalMode !== 'long_term'" class="chip" :class="{selected: filters.amenities?.includes('sea_view')}" :aria-pressed="!!filters.amenities?.includes('sea_view')" @click="toggleQuickAmenity('sea_view')">Вид на море</button>
+        <button v-if="filters.rentalMode !== 'long_term'" class="chip" :class="{selected: isNow}" :aria-pressed="isNow" @click="now">Заезд сегодня</button>
+      </div>
+      <button class="btn outline all-filters" data-search-panel="filters" :aria-expanded="showFilters" aria-controls="search-editor" @click="openSearchPanel('filters')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9m4 0h3M4 17h3m4 0h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Все фильтры <span v-if="activeCount">· {{ activeCount }}</span></button>
+    </div>
+    <section v-if="searchPanel && draft" id="search-editor" ref="searchPanelElement" class="filter-panel" :aria-label="showDates ? 'Даты и гости' : showFilters ? 'Все фильтры' : 'Направление'" @keydown.esc.stop.prevent="closeSearchPanel">
+      <div class="filter-panel-heading"><h2>{{ showDates ? 'Даты и гости' : showFilters ? 'Все фильтры' : 'Направление' }}</h2><button class="close" aria-label="Закрыть без применения" @click="closeSearchPanel">×</button></div>
+      <div v-if="searchPanel === 'destination'" class="filter-fields destination-fields"><label>Регион<select v-model="draft.region" @change="draft.city = null"><option :value="null">Все регионы</option><option v-for="(label,key) in regionLabels" :key="key" :value="key">{{ label }}</option></select></label><label>Город<select v-model="draft.city"><option :value="null">Все города</option><option v-for="location in locations.filter(location => !draft.region || location.region === draft.region)" :key="location.slug" :value="location.city">{{ location.city }}</option></select></label></div>
+      <SearchDateFields v-else-if="showDates" v-model="draft" :invalid-field="invalidField" />
+      <div v-else class="filter-fields">
+        <label>{{ filters.rentalMode === 'long_term' ? 'Цена за месяц, до ₽' : 'Цена за ночь, до ₽' }}<input ref="priceField" v-model.number="draft.maxPrice" name="maxPrice" type="number" min="0" placeholder="Без ограничений" :aria-invalid="invalidField === 'maxPrice'" :aria-describedby="invalidField === 'maxPrice' ? 'search-error' : undefined"></label>
+        <label>Тип жилья<select v-model="draft.type"><option value="">Любой</option><option v-for="(label,key) in labels" :key="key" :value="key">{{ label }}</option></select></label>
+        <fieldset class="amenity-options"><legend>Удобства</legend><div class="check-list"><label v-for="[key,label] in amenityOptions" :key="key"><input v-model="draft.amenities" type="checkbox" :value="key"> {{ label }}</label></div><p v-if="!amenityOptions.length" class="muted">Базовые удобства есть во всех объектах этого режима аренды.</p></fieldset>
+        <fieldset class="verification-option"><legend>Дополнительно</legend><label><input v-model="draft.videoVerified" type="checkbox"> Видео проверено</label><p class="muted">В демо — отметка в примерах объявлений, без реальной проверки.</p></fieldset>
+      </div>
+      <div v-if="error" id="search-error" class="error" role="alert">{{ error }}</div>
+      <div class="filter-actions"><button v-if="showFilters" class="btn outline" @click="resetDraft">Сбросить</button><button class="btn primary" :disabled="!demoReady" @click="applyFilters()">{{ resultActionLabel }}</button></div>
+    </section>
+    <div v-if="activeTags.length" class="active-filters" aria-label="Применённые фильтры"><button v-for="tag in activeTags" :key="tag.key" class="chip" :aria-label="`Убрать фильтр: ${tag.label}`" @click="removeTag(tag.key)">{{ tag.label }} <span aria-hidden="true">×</span></button><button class="back" @click="clearFilters">Сбросить ограничения</button></div>
+    <div v-if="demoReady && filters.rentalMode === 'long_term' && !db.properties.some(p => p.rentalMode === 'long_term' && p.status === 'published')" class="notice">В сохранённом демо пока нет объектов долгосрочной аренды. Чтобы загрузить новые примеры, откройте <NuxtLink :to="link('/profile')">профиль и сбросьте демо</NuxtLink>. Текущие изменения демо будут удалены.</div>
+    <div ref="resultHeading" class="results-heading" tabindex="-1"><div><span class="eyebrow">ПОДБОРКА ДЛЯ ВАС</span><h2>Жильё для вас <span>{{ results.length }}</span></h2></div><div class="view-switch"><button :class="{active: mapMode}" @click="mapMode = true">⌖ Карта</button><button :class="{active: !mapMode}" @click="mapMode = false">☰ Список</button></div></div>
+    <div v-if="scenario === 'loading'" class="empty">Загружаем варианты…</div><div v-else-if="scenario === 'error'" class="empty"><b>Не удалось загрузить варианты</b><p>Это демонстрация ошибки соединения.</p><button class="btn primary" @click="scenario = 'normal'">Попробовать ещё раз</button></div><div v-else class="results-layout"><div class="result-list" :class="{ 'mobile-hidden': mapMode }"><div v-if="!results.length" class="empty"><b>Ничего не нашлось</b><p>Попробуйте изменить даты или фильтры</p><button class="btn outline" @click="clearFilters">Сбросить фильтры</button></div><article v-for="p in results" :key="p.id" class="property-card" role="link" tabindex="0" :aria-label="p.title" @click="goStay(p)" @keydown.enter.self="goStay(p)" @keydown.space.self.prevent="goStay(p)"><div class="card-image"><img :src="photo(p)" :alt="p.title"><span class="image-tag">{{ labels[p.type] }}</span><button class="heart" :disabled="!demoReady" :aria-label="isFavorite(p) ? 'Убрать из избранного' : 'В избранное'" @click.stop="store.toggleFavorite(p.id)">{{ isFavorite(p) ? '♥' : '♡' }}</button></div><div class="card-content"><div class="card-top"><span class="eyebrow">{{ p.city }} · {{ regionLabels[propertyRegion(p)] || 'Юг России' }}</span><span>★ {{ p.rating }}</span></div><h3>{{ p.title }}</h3><p>{{ p.description }}</p><div v-if="p.videoVerified" class="verified">▣ Видео проверено</div><div class="card-bottom"><span><b>{{ format(p.priceFrom) }} ₽</b> / {{ periodLabel(p) }}</span><span class="circle">↗</span></div></div></article></div>
       <div class="map" :class="{ 'mobile-hidden': !mapMode }"><ClientOnly><YandexMap :properties="results" :selected="selected" @select="selectMapProperty" /><template #fallback><div class="map-loading">Загружаем карту…</div></template></ClientOnly><div v-if="!results.length" class="map-empty"><b>Ничего не нашлось</b><span>Измените даты или фильтры</span><button class="btn primary" @click="clearFilters">Сбросить фильтры</button></div><article v-if="chosen" class="map-card" role="link" tabindex="0" :aria-label="chosen.title" @click="goStay(chosen)" @keydown.enter.self="goStay(chosen)" @keydown.space.self.prevent="goStay(chosen)"><img :src="photo(chosen)" :alt="chosen.title"><div><strong>{{ chosen.title }}</strong><small>{{ chosen.city }} · {{ labels[chosen.type] }}</small><span>★ {{ chosen.rating }} <i v-if="chosen.videoVerified"> · Видео проверено</i></span><b>{{ format(chosen.priceFrom) }} ₽ <small>/ {{ periodLabel(chosen) }}</small></b></div><div class="map-actions"><button class="map-card-close" aria-label="Закрыть карточку объекта" @click.stop="selectMapProperty(null)">×</button><div v-if="results.length > 1" class="map-cycle"><button aria-label="Предыдущий объект" @click.stop="cycleResult(-1)">‹</button><button aria-label="Следующий объект" @click.stop="cycleResult(1)">›</button></div><span v-else class="circle">→</span></div></article></div></div>
   </main>
-  <main v-else-if="path.startsWith('/stays/')" class="detail-page"><template v-if="property"><button class="back" aria-label="Назад к поиску" @click="router.back()">← Назад к поиску</button><div class="detail-grid"><div><div class="detail-photo"><img :src="galleryImages[photoIndex]" :alt="`${property.title} · фото ${photoIndex + 1}`"><template v-if="galleryImages.length > 1"><button class="gallery-prev" aria-label="Предыдущее фото" @click="movePhoto(-1)">‹</button><button class="gallery-next" aria-label="Следующее фото" @click="movePhoto(1)">›</button><span class="gallery-count">{{ photoIndex + 1 }} / {{ galleryImages.length }}</span></template><button class="heart" :disabled="!store.ready" @click="store.toggleFavorite(property.id)" aria-label="Избранное">{{ isFavorite(property) ? '♥' : '♡' }}</button><span class="image-tag">Демонстрационное изображение</span></div><div class="detail-copy"><div class="eyebrow">{{ property.city }} · {{ labels[property.type] }}</div><h1>{{ property.title }}</h1><div class="meta"><span v-if="property.videoVerified" class="verified">▣ Видео проверено</span><span>★ {{ property.rating }} · {{ property.reviewCount }} отзывов</span></div><div class="features"><span v-for="a in property.amenities" :key="a">{{ {sea_view:'⌁ Вид на море',terrace:'☼ Терраса',wifi:'⌁ Wi-Fi',parking:'▣ Парковка',kitchen:'Кухня',washer:'Стиральная машина',air_conditioning:'Кондиционер'}[a] || a }}</span></div><h2>Об этом месте</h2><p>{{ property.description }}</p><p class="muted">Все сведения и отзывы в демо вымышлены.</p></div></div><aside id="booking-options" class="booking-panel"><div class="eyebrow">ВАШЕ ПУТЕШЕСТВИЕ</div><h2>Выберите жильё</h2><button class="search-trigger full" @click="showDates = true">▦ &nbsp; {{ dateRange }} · {{ filters.guests }} гост. <span class="arrow disclosure-chevron" aria-hidden="true"></span></button><p class="muted">Доступные варианты на выбранные даты</p><p v-if="property.rentalMode === 'long_term'" class="muted">От 30 ночей. Месяц — 30 дней; неполный месяц рассчитывается пропорционально.</p><div v-if="!availableUnits.length" class="empty compact">На эти даты нет подходящих вариантов.</div><button v-for="u in availableUnits" :key="u.id" class="unit-row" :class="{chosen: selectedUnit === u.id}" :aria-pressed="selectedUnit === u.id" @click="selectedUnit = u.id"><span><b>{{ u.label }}</b><small>До {{ u.capacity }} гостей</small></span><span><b>{{ format(unitRate(u)) }} ₽</b><small>за {{ periodLabel(property) }}</small></span></button><div v-if="selectedUnit && money(units.find(x => x.id === selectedUnit))" class="total"><span>Итого</span><b>{{ format(money(units.find(x => x.id === selectedUnit)).total) }} ₽</b></div><button class="btn primary full" :disabled="!selectedUnit || !store.ready" @click="goCheckout(units.find(x => x.id === selectedUnit))">Забронировать →</button><small class="muted">Пока ничего не оплачивается</small></aside></div><div class="mobile-book-bar"><span><b>от {{ format(Math.min(...(availableUnits.length ? availableUnits : units).map(unitRate))) }} ₽</b><small>за {{ periodLabel(property) }}</small></span><a href="#booking-options" class="btn primary">Выбрать жильё ↓</a></div></template><div v-else class="empty">Объект не найден</div></main>
-  <main v-else-if="!store.ready" class="page-container"><div class="skeleton-block"></div><p>Загружаем ваши данные…</p></main>
+  <main v-else-if="path.startsWith('/stays/')" class="detail-page"><template v-if="property"><button class="back" aria-label="Назад к поиску" @click="router.back()">← Назад к поиску</button><div class="detail-grid"><div><div class="detail-photo"><img :src="galleryImages[photoIndex]" :alt="`${property.title} · фото ${photoIndex + 1}`"><template v-if="galleryImages.length > 1"><button class="gallery-prev" aria-label="Предыдущее фото" @click="movePhoto(-1)">‹</button><button class="gallery-next" aria-label="Следующее фото" @click="movePhoto(1)">›</button><span class="gallery-count">{{ photoIndex + 1 }} / {{ galleryImages.length }}</span></template><button class="heart" :disabled="!demoReady" @click="store.toggleFavorite(property.id)" aria-label="Избранное">{{ isFavorite(property) ? '♥' : '♡' }}</button><span class="image-tag">Демонстрационное изображение</span></div><div class="detail-copy"><div class="eyebrow">{{ property.city }} · {{ labels[property.type] }}</div><h1>{{ property.title }}</h1><div class="meta"><span v-if="property.videoVerified" class="verified">▣ Видео проверено</span><span>★ {{ property.rating }} · {{ property.reviewCount }} отзывов</span></div><div class="features"><span v-for="a in property.amenities" :key="a">{{ {sea_view:'⌁ Вид на море',terrace:'☼ Терраса',wifi:'⌁ Wi-Fi',parking:'▣ Парковка',kitchen:'Кухня',washer:'Стиральная машина',air_conditioning:'Кондиционер'}[a] || a }}</span></div><h2>Об этом месте</h2><p>{{ property.description }}</p><p class="muted">Все сведения и отзывы в демо вымышлены.</p></div></div><aside id="booking-options" class="booking-panel"><div class="eyebrow">ВАШЕ ПУТЕШЕСТВИЕ</div><h2>Выберите жильё</h2><button class="search-trigger full" data-search-panel="dates" :aria-expanded="showDates" aria-controls="stay-date-editor" @click="openSearchPanel('dates')">▦ &nbsp; {{ dateRange }} · {{ filters.guests }} гост. <span class="arrow disclosure-chevron" aria-hidden="true"></span></button><section v-if="showDates && draft" id="stay-date-editor" ref="searchPanelElement" class="filter-panel" aria-label="Даты и гости" @keydown.esc.stop.prevent="closeSearchPanel"><SearchDateFields v-model="draft" :invalid-field="invalidField" /><div v-if="error" id="search-error" class="error" role="alert">{{ error }}</div><div class="filter-actions"><button class="btn outline" @click="closeSearchPanel">Отмена</button><button class="btn primary" @click="applyFilters()">Применить</button></div></section><p class="muted">Доступные варианты на выбранные даты</p><p v-if="property.rentalMode === 'long_term'" class="muted">От 30 ночей. Месяц — 30 дней; неполный месяц рассчитывается пропорционально.</p><div v-if="!availableUnits.length" class="empty compact">На эти даты нет подходящих вариантов.</div><button v-for="u in availableUnits" :key="u.id" class="unit-row" :class="{chosen: selectedUnit === u.id}" :aria-pressed="selectedUnit === u.id" @click="selectedUnit = u.id"><span><b>{{ u.label }}</b><small>До {{ u.capacity }} гостей</small></span><span><b>{{ format(unitRate(u)) }} ₽</b><small>за {{ periodLabel(property) }}</small></span></button><div v-if="selectedUnit && money(units.find(x => x.id === selectedUnit))" class="total"><span>Итого</span><b>{{ format(money(units.find(x => x.id === selectedUnit)).total) }} ₽</b></div><button class="btn primary full" :disabled="!selectedUnit || !demoReady" @click="goCheckout(units.find(x => x.id === selectedUnit))">Забронировать →</button><small class="muted">Пока ничего не оплачивается</small></aside></div><div class="mobile-book-bar"><span><b>от {{ format(Math.min(...(availableUnits.length ? availableUnits : units).map(unitRate))) }} ₽</b><small>за {{ periodLabel(property) }}</small></span><a href="#booking-options" class="btn primary">Выбрать жильё ↓</a></div></template><div v-else class="empty">Объект не найден</div></main>
+  <main v-else-if="!demoReady" class="page-container"><div class="skeleton-block"></div><p>Загружаем ваши данные…</p></main>
   <main v-else-if="path.startsWith('/checkout/')" class="page-container narrow"><template v-if="currentUnit && unitProperty?.status === 'published'"><NuxtLink :to="link(`/stays/${unitProperty.id}`)" class="back">← К объекту</NuxtLink><div class="eyebrow">ПОЧТИ ГОТОВО</div><h1>Ваша поездка</h1><div class="panel"><div class="summary-property"><img :src="photo(unitProperty)" :alt="unitProperty.title"><div><h3>{{ unitProperty.title }}</h3><p>{{ unitProperty.city }} · {{ currentUnit.label }}</p></div></div><div class="line"><span>Даты</span><b>{{ dateRange }}</b></div><div class="line"><span>Гости</span><b>{{ filters.guests }}</b></div><div v-if="money(currentUnit)" class="line"><span v-if="currentUnit.baseMonthly != null">{{ format(currentUnit.baseMonthly) }} ₽/мес × {{ money(currentUnit).nights }}/30</span><span v-else>{{ format(currentUnit.baseNightly) }} ₽ × {{ money(currentUnit).nights }} ноч.</span><b>{{ format(money(currentUnit).total - currentUnit.cleaningFee) }} ₽</b></div><p v-if="currentUnit.baseMonthly != null" class="muted">Минимум 30 ночей. Цена за месяц из 30 дней; итог округлён до целого рубля.</p><div class="line"><span>Уборка</span><b>{{ format(currentUnit.cleaningFee) }} ₽</b></div><div class="line total"><span>Итого</span><b>{{ format(money(currentUnit)?.total) }} ₽</b></div><div v-if="error" class="error" role="alert">{{ error }}</div><button class="btn primary full" @click="book">Отправить демо-заявку</button><p class="muted">Демо-бронирование. Реальные платежи и уведомления не выполняются.</p></div></template><div v-else class="empty">Вариант размещения не найден.</div></main>
   <main v-else-if="path === '/bookings' || path === '/host/bookings'" class="page-container narrow"><div class="eyebrow">{{ isHost ? 'КАБИНЕТ ХОЗЯИНА' : 'ВАШИ ПУТЕШЕСТВИЯ' }}</div><h1>Бронирования</h1><p class="muted">{{ isHost ? 'Управляйте заявками гостей' : 'Все ваши поездки в одном месте' }}</p><button v-if="isHost" class="btn primary manual-button" @click="showManualBooking = true">＋ Добавить бронь вручную</button><div v-if="error" class="error" role="alert">{{ error }}</div><HostBookings v-if="isHost" :db="db" @transition="(booking, status) => transition(booking, status, 'host')" /><div v-if="!isHost && !userBookings.length" class="empty">Пока нет бронирований. <NuxtLink :to="link('/search')">Найти жильё →</NuxtLink></div><template v-if="!isHost"><article v-for="b in userBookings" :key="b.id" class="booking-card"><div class="summary-property"><img :src="photo(bookingInfo(b).property)" alt=""><div><div class="badge-status">{{ statuses[b.status] }}</div><small v-if="b.source === 'manual'" class="muted"> · Добавлена хозяином</small><h3>{{ bookingInfo(b).property?.title }}</h3><p>{{ bookingInfo(b).unit?.label }} · {{ date(b.checkIn) }} — {{ date(b.checkOut) }}</p><b>{{ format(b.total) }} ₽</b></div></div><div class="actions"><button v-if="b.status === 'confirmed'" class="btn primary" @click="transition(b,'paid','guest')">Симулировать оплату</button><button v-if="['pending_host','confirmed','paid'].includes(b.status)" class="btn outline" @click="transition(b,'cancelled','guest')">Отменить</button></div></article></template></main>
   <main v-else-if="path === '/favorites'" class="page-container"><div class="eyebrow">ВАША КОЛЛЕКЦИЯ</div><h1>Избранное</h1><div v-if="!favorites.length" class="empty">Здесь пока пусто. Сохраняйте понравившиеся места ♡<p><NuxtLink :to="link('/search')">Найти жильё →</NuxtLink></p></div><div class="favorites-grid"><article v-for="p in favorites" :key="p.id" class="property-card" role="link" tabindex="0" :aria-label="p.title" @click="goStay(p)" @keydown.enter.self="goStay(p)" @keydown.space.self.prevent="goStay(p)"><div class="card-image"><img :src="photo(p)" :alt="p.title"><button class="heart" aria-label="Убрать из избранного" @click.stop="store.toggleFavorite(p.id)">♥</button></div><div class="card-content"><span class="eyebrow">{{ p.city }}</span><h3>{{ p.title }}</h3><p>{{ labels[p.type] }}</p></div></article></div></main>
@@ -206,8 +334,7 @@ function closeSheet() { showFilters.value = false; showDates.value = false; edit
     <template v-else><div class="chips"><button v-for="t in ['all','apartment','hotel','hostel']" :key="t" class="chip" :class="{selected:hostType === t}" @click="hostType = t">{{ t === 'all' ? 'Все' : labels[t] }}</button></div><div class="host-cards"><NuxtLink v-for="p in ownProperties" :key="p.id" :to="link(`/host/properties/${p.id}`)" class="host-card"><img :src="photo(p)" :alt="p.title"><div><span class="badge-status" :class="{draft: p.status === 'draft'}">{{ p.status === 'published' ? 'Опубликован' : 'Черновик' }}</span><h3>{{ p.title }}</h3><p>{{ labels[p.type] }} · {{ p.city }}</p><small>{{ hostSummary(p) }}</small><span v-if="p.status === 'draft'" class="host-continue">Продолжить →</span></div><span class="circle">↗</span></NuxtLink></div></template>
   </main>
   <UiSheet :open="modalOpen" :title="sheetTitle" @close="closeSheet"><div v-if="error" class="error" role="alert">{{ error }}</div>
-    <template v-if="showDates || showFilters"><div v-if="showDates" class="form-grid"><label>Заезд<input v-model="filters.checkIn" type="date"></label><label>Выезд<input v-model="filters.checkOut" type="date"></label><label>Гостей<input v-model.number="filters.guests" type="number" min="1" max="20"></label></div><div v-else class="form-stack"><label>Регион<select v-model="filters.region" @change="filters.city = null"><option :value="null">Все регионы</option><option v-for="(label,key) in regionLabels" :key="key" :value="key">{{ label }}</option></select></label><label>Город<select v-model="filters.city"><option :value="null">Все города</option><option v-for="city in locations.filter(location => !filters.region || location.region === filters.region).map(location => location.city)" :key="city">{{ city }}</option></select></label><label>{{ filters.rentalMode === 'long_term' ? 'Цена за месяц, до ₽' : 'Цена за ночь, до ₽' }}<input v-model.number="filters.maxPrice" type="number" min="0" placeholder="Без ограничений"></label><label>Тип жилья<select v-model="filters.type"><option value="">Любой</option><option v-for="(label,key) in labels" :key="key" :value="key">{{ label }}</option></select></label><button class="btn outline" :aria-pressed="isNow" @click="now()">Свободно сейчас · сегодня — завтра</button><div class="check-list"><label><input type="checkbox" :checked="filters.amenities?.includes('sea_view')" @change="toggleAmenity('sea_view')"> Вид на море</label><label><input type="checkbox" :checked="filters.amenities?.includes('terrace')" @change="toggleAmenity('terrace')"> Терраса</label><label><input v-model="filters.videoVerified" type="checkbox"> Видео проверено</label></div></div><div class="sheet-actions"><button v-if="showFilters" class="btn outline" @click="clearFilters">Сбросить</button><button class="btn primary" @click="applyFilters">Показать варианты</button></div></template>
-    <template v-else-if="editor"><div class="form-stack"><label>Название<input v-model="editor.title"></label><label>Город<input v-model="editor.city"></label><label>Описание<textarea v-model="editor.description"></textarea></label></div><button class="btn primary full" @click="saveProperty">Сохранить</button></template>
+    <template v-if="editor"><div class="form-stack"><label>Название<input v-model="editor.title"></label><label>Город<input v-model="editor.city"></label><label>Описание<textarea v-model="editor.description"></textarea></label></div><button class="btn primary full" @click="saveProperty">Сохранить</button></template>
     <template v-else-if="unitEditor"><div class="form-stack"><label>Название<input v-model="unitEditor.label"></label><label>Вместимость<input v-model.number="unitEditor.capacity" type="number" min="1"></label><label v-if="unitEditor.baseMonthly != null">Цена за месяц<input v-model.number="unitEditor.baseMonthly" type="number" min="1"></label><label v-else>Цена за ночь<input v-model.number="unitEditor.baseNightly" type="number" min="1"></label><label>Уборка<input v-model.number="unitEditor.cleaningFee" type="number" min="0"></label></div><button class="btn primary full" @click="saveUnit">Сохранить</button></template>
     <template v-else-if="showManualBooking"><div class="form-stack"><label>Единица<select v-model="manualBooking.unitId"><option value="">Выберите вариант</option><option v-for="u in db.units.filter(x => db.properties.some(p => p.id === x.propertyId && p.ownerId === 'host1'))" :key="u.id" :value="u.id">{{ db.properties.find(p => p.id === u.propertyId)?.title }} · {{ u.label }}</option></select></label><label>Заезд<input v-model="manualBooking.checkIn" type="date"></label><label>Выезд<input v-model="manualBooking.checkOut" type="date"></label><label>Гости<input v-model.number="manualBooking.guests" type="number" min="1"></label></div><p class="muted">Демо-бронь появится в общей шахматке.</p><button class="btn primary full" @click="addManualBooking">Добавить бронь</button></template>
     <template v-else><div class="form-stack"><label>Название<input v-model="newProperty.title"></label><label>Город<input v-model="newProperty.city"></label><label>Регион<select v-model="newProperty.region"><option v-for="(label,key) in regionLabels" :key="key" :value="key">{{ label }}</option></select></label><label>Аренда<select v-model="newProperty.rentalMode"><option value="short_term">Посуточно</option><option value="long_term">Долгосрок · от 30 ночей</option></select></label><label>Тип<select v-model="newProperty.type"><option value="apartment">Квартира</option><option value="hotel">Мини-отель</option><option value="hostel">Хостел</option></select></label><label>Описание<textarea v-model="newProperty.description"></textarea></label></div><button class="btn primary full" @click="createProperty">Создать черновик</button></template>

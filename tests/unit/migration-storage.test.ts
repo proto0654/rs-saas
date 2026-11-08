@@ -4,6 +4,31 @@ import seed from '../../demo/seed.json'
 import { useDemoStore } from '../../app/stores/demo.js'
 
 describe('legacy state storage backup', () => {
+  it.each([false, true])('removes only the historical search preset (customized: %s)', customized => {
+    const db = structuredClone(seed)
+    const legacy = { ...seed.defaultSearch, maxPrice: 6000, amenities: ['sea_view'] }
+    db.defaultSearch = legacy as typeof seed.defaultSearch
+    const filters = customized ? { ...legacy, city: 'Ялта', maxPrice: 8000 } : { ...legacy, region: null, type: '', videoVerified: false }
+    const raw = JSON.stringify({ db, favorites: ['p2'], filters, role: 'guest', personalBot: null, audit: [] })
+    const values = new Map([['rs-saas-demo', raw], ['other-app', 'keep']])
+    vi.stubGlobal('localStorage', { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) })
+    try {
+      setActivePinia(createPinia()); const store = useDemoStore(); store.restore()
+      expect(store.restoreWarning).toBe(false)
+      expect(store.data!.filters).toEqual(customized ? filters : seed.defaultSearch)
+      expect(store.data!.db.defaultSearch).toEqual(seed.defaultSearch)
+      expect(store.data!.db.bookings).toEqual(db.bookings)
+      expect(values.get('rs-saas-demo')).toBe(raw)
+      expect(values.get('rs-saas-demo:defaults-backup')).toBe(raw)
+      store.toggleFavorite('p1')
+      expect(values.get('rs-saas-demo:defaults-backup')).toBe(raw)
+      store.restore()
+      expect(store.data!.filters).toEqual(customized ? filters : seed.defaultSearch)
+      store.reset()
+      expect(values.has('rs-saas-demo:defaults-backup')).toBe(false)
+      expect(values.get('other-app')).toBe('keep')
+    } finally { vi.unstubAllGlobals() }
+  })
   it('backs up v1 before a later save and clears only project keys on reset', () => {
     const db={...structuredClone(seed),schemaVersion:1,properties:seed.properties.slice(0,8),units:seed.units.slice(0,20),bookings:seed.bookings.slice(0,9)}
     const raw=JSON.stringify({db,favorites:['p2'],filters:seed.defaultSearch,role:'guest',personalBot:null,audit:[]})

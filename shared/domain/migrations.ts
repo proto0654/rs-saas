@@ -12,7 +12,25 @@ function changeVersion(value: unknown, from: number, to: number): unknown {
 }
 
 export function upgradeDemoState(value: unknown): unknown {
-  return changeVersion(value, 1, demoSchemaVersion)
+  const upgraded = changeVersion(value, 1, demoSchemaVersion)
+  if (!record(upgraded) || !record(upgraded.db) || !isLegacyDefaultSearch(upgraded.db.defaultSearch)) return upgraded
+  const result = structuredClone(upgraded)
+  const database = result.db as Record<string, unknown>
+  if (isLegacyDefaultSearch(result.filters)) result.filters = structuredClone(seed.defaultSearch)
+  database.defaultSearch = structuredClone(seed.defaultSearch)
+  return result
+}
+
+function isLegacyDefaultSearch(value: unknown): boolean {
+  if (!record(value)) return false
+  const allowedKeys = ['checkIn', 'checkOut', 'guests', 'maxPrice', 'city', 'amenities', 'rentalMode', 'region', 'type', 'videoVerified']
+  return Object.keys(value).every(key => allowedKeys.includes(key))
+    && value.checkIn === '2027-06-12' && value.checkOut === '2027-06-16'
+    && value.guests === 2 && value.maxPrice === 6000 && value.city === null
+    && (value.rentalMode == null || value.rentalMode === 'short_term')
+    && (value.region == null || value.region === '') && (value.type == null || value.type === '')
+    && (value.videoVerified == null || value.videoVerified === false)
+    && Array.isArray(value.amenities) && value.amenities.length === 1 && value.amenities[0] === 'sea_view'
 }
 
 export function rollbackDemoState(value: unknown): unknown {

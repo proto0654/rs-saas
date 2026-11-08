@@ -6,11 +6,9 @@
     "checkIn": "2027-06-12",
     "checkOut": "2027-06-16",
     "guests": 2,
-    "maxPrice": 6000,
+    "maxPrice": null,
     "city": null,
-    "amenities": [
-      "sea_view"
-    ],
+    "amenities": [],
     "rentalMode": "short_term"
   },
   "users": [

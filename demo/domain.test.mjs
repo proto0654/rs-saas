@@ -9,6 +9,6 @@ describe('availability and pricing',()=>{
  it('quotes reference apartment',()=>expect(quote(db.units[0],'2027-06-12','2027-06-16').total).toBe(16800));
  it('rejects invalid dates and ranges',()=>{expect(()=>nights('2027-06-12','2027-06-12')).toThrow();expect(()=>nights('2027-02-30','2027-03-05')).toThrow()});
  it('excludes drafts and beds for two guests',()=>{const r=search(db,{checkIn:'2027-06-12',checkOut:'2027-06-16',guests:2});expect(r.some(p=>['p3','p4'].includes(p.id))).toBe(false)});
- it('filters together',()=>expect(search(db,db.defaultSearch).map(p=>p.id)).toEqual(['p1']));
+ it('filters together',()=>expect(search(db,{...db.defaultSearch,maxPrice:6000,amenities:['sea_view']}).map(p=>p.id)).toEqual(['p1']));
  it('prevents double booking and preserves seed',()=>{const input={id:'test',unitId:'p1-whole',guestId:'guest1',guests:2,checkIn:'2027-06-12',checkOut:'2027-06-16'};const next=createBooking(db,input);expect(next.bookings.at(-1).total).toBe(16800);expect(db.bookings).toHaveLength(47);expect(()=>createBooking(next,{...input,id:'test2'})).toThrow('Unavailable')});
 });
