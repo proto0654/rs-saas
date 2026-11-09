@@ -84,7 +84,7 @@ onMounted(() => {
     const uniquePhotos = [...selection]
     while (selection.length < 12) selection.push(uniquePhotos[selection.length % uniquePhotos.length])
   }
-  images.value = selection
+  images.value = selection.map(assetUrl)
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onScroll)
   onScroll()
