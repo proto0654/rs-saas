@@ -2,7 +2,7 @@
 
 Lokal (Локаль) is a Nuxt demonstration of a guest accommodation marketplace and an owner workspace. See the [documentation hub](README.md) for product, design and acceptance requirements.
 
-The browser-local Pinia store starts from the [demo seed](../demo/seed.json); it is not a shared database, authentication, or a production audit trail. Public pages render with the seed through SSR or static prerendering; private state is restored after mount. The published preview uses static hosting; see [publication and rollback](DEMO.md#preview-publication). The [grammY bot](../bot/index.mjs) is a separate optional process; personal bot tokens shown in the owner workspace are simulated.
+The browser-local Pinia store starts from the [demo seed](../demo/seed.json); it is not a shared database, authentication, or a production audit trail. Public pages render with the seed through SSR or static prerendering; private state is restored after mount. Static previews publish to WebLaba (`app.weblaba.ru`, local SSH after `generate`) and GitHub Pages (`/rs-saas/` via Actions); see [publication and rollback](DEMO.md#preview-publication). The [grammY bot](../bot/index.mjs) is a separate optional process; personal bot tokens shown in the owner workspace are simulated.
 
 The primary project language is English for new documentation and code, while existing Russian product documents and customer-facing UI remain in Russian. Project instructions override global agent rules. See [run instructions](../README.md) and [architecture](ARCHITECTURE.md).
 

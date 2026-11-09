@@ -55,12 +55,20 @@ Pexels sources by listing ID: p6: [11295762](https://images.pexels.com/photos/11
 
 ## Preview publication
 
-Public URLs: [web preview](https://app.weblaba.ru), [Telegram Mini App](https://app.weblaba.ru/tg). The menu button of [the shared demo bot](https://t.me/UBK_Real_Estate_bot) opens the Mini App; its existing webhook runtime is managed separately from this static publication.
+Public URLs: [WebLaba preview](https://app.weblaba.ru), [GitHub Pages preview](https://proto0654.github.io/rs-saas/), [Telegram Mini App](https://app.weblaba.ru/tg). The menu button of [the shared demo bot](https://t.me/UBK_Real_Estate_bot) opens the Mini App on WebLaba; its existing webhook runtime is managed separately from these static publications.
 
-The shared REG.RU host serves Apache files and has Node 10, so this demo uses `npm run generate` built locally with Node 22. Public property and city routes are prerendered; private and Telegram routes use the client application with the Apache fallback to `200.html`. Apache can append a trailing slash when a prerendered directory is opened; platform routing normalizes it before matching screens. There is no server API in the preview. The SSR build remains available with `npm run build` on a Node 22 host.
+Both previews are the same static Nuxt generate output with different `baseURL` values. WebLaba is the root host (`/`); GitHub Pages is served under `/rs-saas/` via `NUXT_APP_BASE_URL`. Do not reuse one `.output/public` tree for both targets. There is no server API in either preview. The SSR build remains available with `npm run build` on a Node 22 host.
+
+### WebLaba (app.weblaba.ru)
+
+The shared REG.RU host serves Apache files and has Node 10, so this demo uses `npm run generate` built locally with Node 22 (default `baseURL` `/`). Public property and city routes are prerendered; private and Telegram routes use the client application with the Apache fallback to `200.html`. Apache can append a trailing slash when a prerendered directory is opened; platform routing normalizes it before matching screens.
 
 Static HTML reflects the build-time seed; query filters and saved state are applied in the browser. Unknown routes use the client 404 screen and may have HTTP status 200 through the fallback. Apache responses set `X-Robots-Tag: noindex, nofollow`; HTML, JSON and PNG files use `Cache-Control: no-cache` where the included header rules apply.
 
 Run tests, typecheck and generation before upload. Inspect `.output/public` for the expected routes and ensure no bot token or `.env` is included. The public Yandex JavaScript key is intentionally included at build time and must allow the preview domain. Upload only `.output/public`, with `.htaccess`, to the dedicated preview directory `/var/www/u1396397/data/www/app.weblaba.ru` on `server199.hosting.reg.ru` as `u1396397`, using the local `weblaba_deploy` SSH key. Never publish the project root or overwrite `weblaba.ru`.
 
 Before replacing an existing preview, retain its complete directory in a sibling release backup. Record the source commit, whether the tree had changes, and the uploaded archive SHA-256 outside the public directory. To roll back, move the failed preview aside and restore that directory. Browser-local demo data remains independent of deployed files. Verify HTTPS, `/tg/search`, a property page, a private calendar route, images and the Yandex map after publication. Bot credentials stay outside the public directory; updating its menu URL does not require changing an existing webhook.
+
+### GitHub Pages (proto0654.github.io/rs-saas)
+
+Push to `main` (or run workflow_dispatch) triggers [Preview · GitHub Pages](../.github/workflows/deploy-pages.yml): `npm ci`, test, typecheck, `npm run generate` with `NUXT_APP_BASE_URL=/rs-saas/`, then `actions/deploy-pages`. Nuxt emits `404.html` for client-route fallback on Pages (Apache `.htaccess` is ignored there). Store `NUXT_PUBLIC_YANDEX_MAPS_KEY` as a repository Actions secret; allow `proto0654.github.io` for that key. Pages is a secondary shareable preview; WebLaba remains the Telegram Mini App host.

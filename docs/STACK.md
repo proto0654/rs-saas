@@ -6,7 +6,7 @@ Nuxt 4, Vue 3, TypeScript; Tailwind CSS 4 через @tailwindcss/vite; daisyUI 
 scripts приложения:
 - dev: nuxt dev
 - build: nuxt build
-- generate: nuxt generate — статическое превью для shared hosting
+- generate: nuxt generate — статическое превью; WebLaba с base `/`, GitHub Pages с `NUXT_APP_BASE_URL=/rs-saas/`
 - preview: nuxt preview
 - postinstall: nuxt prepare
 - typecheck: nuxt typecheck
@@ -20,7 +20,7 @@ Vitest node-проект запускает demo/domain.test.mjs и tests/unit/*
 
 Проверки: test, typecheck, build; server preview + прямой HTTP запрос на /stays/p1 должен содержать название жилья в HTML. Затем браузер: нет hydration warnings, личное состояние появляется после mount, роли не текут между SSR-запросами. Проверить переходы /search ↔ /tg и back, localStorage restore/reset. Сервер не должен изменять исходный seed.
 
-Для статической публикации дополнительно выполнить `npm run generate`; порядок загрузки, проверки и отката описан в [сценариях показа](DEMO.md#preview-publication). `npm run preview` запускает серверную сборку и не заменяет проверку Apache fallback на shared hosting.
+Для статической публикации дополнительно выполнить `npm run generate`; порядок загрузки на WebLaba и GitHub Pages описан в [сценариях показа](DEMO.md#preview-publication). `npm run preview` запускает серверную сборку и не заменяет проверку Apache/Pages fallback.
 
 Официальные источники для сборки:
 - https://nuxt.com/docs/4.x/guide/concepts/rendering

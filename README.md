@@ -37,4 +37,4 @@
 
 Каталог: 60 вымышленных объектов в 27 городах Крыма, Кубани и юга России, включая обычные квартиры, хостелы и 12 вариантов долгосрока. После обновления используйте «Сбросить демо» в профиле, чтобы загрузить все примеры; сохранённые изменения автоматически не заменяются. [Сценарии показа](docs/DEMO.md).
 
-Для статического превью на shared hosting: `npm run generate`, затем опубликуйте содержимое `.output/public` вместе с `.htaccess`. [Публикация и откат](docs/DEMO.md#preview-publication).
+Статические превью: WebLaba — `npm run generate` (base `/`) и загрузка `.output/public` с `.htaccess`; GitHub Pages — push в `main`, сборка с `NUXT_APP_BASE_URL=/rs-saas/`. [Публикация и откат](docs/DEMO.md#preview-publication).
