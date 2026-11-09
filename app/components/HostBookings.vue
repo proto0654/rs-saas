@@ -4,6 +4,7 @@ import { blockingStatuses } from '#shared/domain/booking'
 
 const props = defineProps({ db: { type: Object, required: true }, bookingId: { type: String, default: '' } })
 const emit = defineEmits(['transition'])
+const assetUrl = useAssetUrl()
 const groupContainer = ref(null)
 const guests = computed(() => new Map(props.db.users.map(user => [user.id, user.name])))
 const groups = computed(() => {
@@ -44,7 +45,7 @@ watch([() => props.bookingId, groups], async () => {
   <div ref="groupContainer" class="host-booking-groups">
     <p v-if="!groups.length" class="empty">Пока нет объектов.</p>
     <details v-for="group in groups" :key="group.property.id" class="booking-group">
-      <summary class="booking-group-summary"><img v-if="group.property.images?.length" :src="group.property.images[0]" alt=""><span class="booking-group-copy"><b>{{ group.property.title }}</b><small>{{ group.property.city }} · {{ group.units.length }} ед. размещения</small><small>Активные: {{ group.active }} · Ожидают: {{ group.pending }} · Всего: {{ group.count }}</small></span><span class="booking-chevron disclosure-chevron" aria-hidden="true"></span></summary>
+      <summary class="booking-group-summary"><img v-if="group.property.images?.length" :src="assetUrl(group.property.images[0])" alt=""><span class="booking-group-copy"><b>{{ group.property.title }}</b><small>{{ group.property.city }} · {{ group.units.length }} ед. размещения</small><small>Активные: {{ group.active }} · Ожидают: {{ group.pending }} · Всего: {{ group.count }}</small></span><span class="booking-chevron disclosure-chevron" aria-hidden="true"></span></summary>
       <div class="booking-group-body">
         <p v-if="!group.units.length" class="muted">В объекте пока нет номеров или мест.</p>
         <template v-for="item in group.units" :key="item.unit.id">

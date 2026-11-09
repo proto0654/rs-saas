@@ -35,6 +35,15 @@ jobs:
 
       # Static generate for GitHub Pages (no Nitro runtime on Pages).
       # NUXT_APP_BASE_URL must match the repo Pages path.
+      - name: Require Yandex Maps key
+        env:
+          NUXT_PUBLIC_YANDEX_MAPS_KEY: ${{ secrets.NUXT_PUBLIC_YANDEX_MAPS_KEY }}
+        run: |
+          if [ -z "$NUXT_PUBLIC_YANDEX_MAPS_KEY" ]; then
+            echo "NUXT_PUBLIC_YANDEX_MAPS_KEY secret is missing" >&2
+            exit 1
+          fi
+
       - run: npm run generate
         env:
           NUXT_APP_BASE_URL: /rs-saas/

@@ -7,6 +7,7 @@ const props = defineProps({ properties: { type: Array, default: () => [] }, sele
 const emit = defineEmits(['select'])
 const container = ref(null)
 const config = useRuntimeConfig()
+const assetUrl = useAssetUrl()
 const theme = useState('app-theme', () => 'dark')
 const mode = ref(config.public.yandexMapsKey ? 'loading' : 'widget')
 const engine = ref(null)
@@ -308,7 +309,7 @@ onBeforeUnmount(() => {
     <section v-if="clusterProperties.length" class="map-cluster-list" aria-label="Объекты на карте">
       <div class="map-cluster-heading"><b>{{ clusterLabel(clusterProperties.length) }} рядом</b><button type="button" class="map-card-close" aria-label="Закрыть список объектов" @click="clusterIds = []">×</button></div>
       <button v-for="property in clusterProperties" :key="property.id" type="button" class="map-cluster-item" @click="selectClusterProperty(property.id)">
-        <img :src="property.images?.[0] || '/demo/p1.svg'" :alt="property.title">
+        <img :src="assetUrl(property.images?.[0] || '/demo/p1.svg')" :alt="property.title">
         <div>
           <strong>{{ property.title }}</strong>
           <small>{{ property.city }} · {{ typeLabels[property.type] || property.type }}</small>

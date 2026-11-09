@@ -181,15 +181,16 @@ const format = n => new Intl.NumberFormat('ru-RU').format(n || 0)
 const date = s => { const [y,m,d] = s.split('-').map(Number); return new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(Date.UTC(y,m-1,d))) }
 const dateRange = computed(() => { try { return `${date(filters.value.checkIn)} — ${date(filters.value.checkOut)}` } catch { return 'Выберите даты' } })
 const money = unit => { try { return quote(unit, filters.value.checkIn, filters.value.checkOut) } catch { return null } }
-const photo = p => p?.images?.[0] || '/demo/p1.svg'
+const assetUrl = useAssetUrl()
+const photo = p => assetUrl(p?.images?.[0] || '/demo/p1.svg')
 const galleryImages = computed(() => {
   const images = property.value?.images || []
   const example = seed.properties.find(p => p.id === property.value?.id)
-  if (['p1','p2'].includes(property.value?.id) && images.length === 1 && images[0] === example?.images[0]) return example.images
-  return images.length ? images : ['/demo/p1.svg']
+  if (['p1','p2'].includes(property.value?.id) && images.length === 1 && images[0] === example?.images[0]) return example.images.map(assetUrl)
+  return (images.length ? images : ['/demo/p1.svg']).map(assetUrl)
 })
 function movePhoto(step) { photoIndex.value = (photoIndex.value + step + galleryImages.value.length) % galleryImages.value.length }
-const unitImage = unit => unit.image || seed.units.find(example => example.id === unit.id && example.propertyId === unit.propertyId)?.image
+const unitImage = unit => assetUrl(unit.image || seed.units.find(example => example.id === unit.id && example.propertyId === unit.propertyId)?.image)
 function unitAvailability(unit) {
   const day = hostDay.value || db.value.demoToday
   const block = db.value.blocks.find(b => b.unitId === unit.id && b.start <= day && day < b.end)
